@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise Library</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* YOUR PROVIDED BASE CSS */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #0f1928;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .logo { /* Not used in HTML, but kept as per your CSS */
+            position: fixed;
+            top: 10px;
+            left: 20px;
+            z-index: 999;
+        }
+        .logo img { /* Not used in HTML, but kept as per your CSS */
+            height: 50px;
+        }
+        .main-container {
+            max-width: 900px;
+            margin: auto;
+            background-color: #111c28;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(43, 168, 184, 0.3);
+            margin-top: 50px;
+        }
+        h1 {
+            text-align: center;
+            color: #25a1c2;
+            margin-bottom: 30px;
+        }
+        .profile-image { /* Not used in HTML, but kept as per your CSS */
+            display: block;
+            margin: 0 auto 20px;
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #2ba8b8;
+            cursor: pointer;
+        }
+        .row { /* Not used in HTML, but kept as per your CSS */
+            margin-bottom: 20px;
+        }
+        label { /* Not used in HTML, but kept as per your CSS */
+            font-weight: bold;
+            color: #2ba8b8;
+        }
+        input, select, textarea { /* Not used in HTML, but kept as per your CSS */
+            width: 100%;
+            padding: 10px;
+            background: #0f1928;
+            border: 1px solid #2ba8b8;
+            border-radius: 6px;
+            color: white;
+        }
+        textarea { /* Not used in HTML, but kept as per your CSS */
+            resize: vertical;
+            height: 80px;
+        }
+        .display-value { /* Not used in HTML, but kept as per your CSS */
+            color: #ccc;
+            font-size: 18px;
+            padding: 4px 0;
+            border-bottom: 1px solid #2ba8b8;
+        }
+        .buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            background: #2ba8b8;
+            border: none;
+            padding: 12px 20px;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #1d8c9a;
+        }
+        #dpInput { /* Not used in HTML, but kept as per your CSS */
+            display: none;
+        }
+
+        /* Custom Styles for Exercise Library to fit the theme */
+        .tab-navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #2ba8b8;
+        }
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            color: #999;
+            font-weight: normal;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+        }
+        .tab-button i {
+            margin-right: 8px;
+        }
+        .tab-button:hover {
+            color: #25a1c2;
+            border-color: #25a1c2;
+            background: none;
+        }
+        .tab-button.active {
+            color: #25a1c2;
+            border-color: #25a1c2;
+            font-weight: bold;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #25a1c2;
+            margin-bottom: 10px;
+        }
+        .section-header p {
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Min-width 250px as requested */
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: #0f1928;
+            padding: 25px; /* Increased padding */
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(43, 168, 184, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(43, 168, 184, 0.4);
+            border-color: #2ba8b8;
+        }
+        .card h3, .card h2 {
+            font-size: 1.2rem; /* Slightly larger titles within cards */
+            font-weight: 600;
+            color: #2ba8b8;
+            margin-bottom: 5px;
+        }
+        .card p {
+            font-size: 0.9rem; /* Slightly larger text in cards */
+            color: #aaa;
+            margin-bottom: 3px;
+        }
+        .card .text-sm {
+            font-size: 0.85rem;
+            color: #888;
+        }
+        .card .text-xs {
+            font-size: 0.8rem;
+            color: #eee;
+        }
+        .card .font-bold {
+            font-weight: bold;
+            color: #bbb;
+        }
+        .card .inline-block {
+            background-color: #1a2736;
+            color: #2ba8b8;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+        }
+
+        .dragging {
+            opacity: 0.6;
+            border: 2px dashed #2ba8b8;
+            box-shadow: 0 0 15px rgba(43, 168, 184, 0.6);
+        }
+
+        #exerciseList .card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        #exerciseList .card .flex-grow {
+            width: 100%;
+        }
+        #exerciseList .card h2 {
+            font-size: 1.3rem; /* Even larger for exercise names in list */
+            color: #25a1c2;
+        }
+
+        #backToPrevious, #backToEquipment {
+            background: #25a1c2;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #backToPrevious i, #backToEquipment i {
+            margin-right: 8px;
+        }
+        #backToPrevious:hover, #backToEquipment:hover {
+            background: #1d8c9a;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .flex-row-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .card-muscle-tags {
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h1>Exercise Library</h1>
+
+        <!-- Navigation Tabs -->
+        <div class="tab-navigation">
+            <button id="muscleTab" class="tab-button active">
+                <i class="fas fa-dumbbell"></i>By Muscle
+            </button>
+            <button id="equipmentTab" class="tab-button">
+                <i class="fas fa-toolbox"></i>By Equipment
+            </button>
+            <button id="splitTab" class="tab-button">
+                <i class="fas fa-calendar-alt"></i>Training Splits
+            </button>
+        </div>
+
+        <!-- Muscle Group Section -->
+        <div id="muscleGroupSection">
+            <div id="muscleGroupHeader" class="section-header">
+                <h2>Browse Exercises by Muscle Group</h2>
+                <p>Target specific muscle groups with our comprehensive exercise library.</p>
+            </div>
+            <div id="muscleGroupGrid" class="grid-container">
+                <!-- Muscle groups populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Equipment Section -->
+        <div id="equipmentSection" class="hidden">
+            <div id="equipmentHeader" class="section-header">
+                <h2>Browse Exercises by Equipment</h2>
+                <p>Find exercises based on the equipment you have available.</p>
+            </div>
+            <div id="equipmentGrid" class="grid-container">
+                <!-- Equipment populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Training Splits Section (NEW) -->
+        <div id="trainingSplitSection" class="hidden">
+            <div id="trainingSplitHeader" class="section-header">
+                <h2>Browse Exercises by Training Split</h2>
+                <p>Organize your workouts by popular training splits.</p>
+            </div>
+            <div id="trainingSplitGrid" class="grid-container">
+                <!-- Training splits populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Exercises Header -->
+        <div id="exercisesHeader" class="hidden section-header">
+            <h2 id="exercisesTitle">Exercises</h2>
+            <p id="exercisesDescription">Discover our collection of exercises. Perfect your form with detailed instructions and guidance.</p>
+            <button id="backToPrevious">
+                <i class="fas fa-arrow-left"></i>Back
+            </button>
+        </div>
+
+        <!-- Exercise List -->
+        <div id="exerciseList" class="grid-container"></div>
+
+        <!-- NEW: Specific Muscle Group Section for Equipment -->
+        <div id="equipmentMuscleGroupSection" class="hidden">
+            <div id="equipmentMuscleGroupHeader" class="section-header">
+                <h2 id="equipmentMuscleGroupTitle"></h2>
+                <p id="equipmentMuscleGroupDescription"></p>
+                <button id="backToEquipment">
+                    <i class="fas fa-arrow-left"></i>Back to Equipment
+                </button>
+            </div>
+            <div id="equipmentMuscleGroupGrid" class="grid-container">
+                <!-- Muscle groups for specific equipment populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Exercise data (UNCHANGED)
+        const tricepsExercises = [
+            { name: "Floor Dips", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/floor-dips" },
+            { name: "Knee Pushups Diamond", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/knee-pushups-diamond" },
+            { name: "Bench Dips", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/bench-dips" },
+            { name: "Bent Over Tricep Extensions", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/bent-over-tricep-extensions" },
+            { name: "Close Grip Bench Press", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/close-grip-bench-press" },
+            { name: "Decline Tricep Extensions", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/decline-tricep-extensions" },
+            { name: "Diamond Pushups", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/diamond-pushups" },
+            { name: "Kneeling Tricep Cable Extension", equipment: "Cable Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/kneeling-tricep-cable-extension" },
+            { name: "Reverse Tricep Pushdown", equipment: "Cable Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/reverse-tricep-pushdown" },
+            { name: "Rope Tricep Pushdown", equipment: "Cable Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/rope-tricep-pushdown" },
+            { name: "Skull Crusher", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/skull-crusher" },
+            { name: "Tricep Dips", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/tricep-dips" },
+            { name: "Tricep Dumbbell Kickback", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/tricep-dumbbell-kickback" },
+            { name: "Tricep Pushdown", equipment: "Cable Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/tricep-pushdown" }
+        ];
+
+        const adductorExercises = [
+            { name: "Inner Leg Lift", equipment: "Bodyweight", difficulty: "Advanced", link: "https://www.gymstreak.com/exercises/inner-leg-lift" },
+            { name: "Jumping Jacks", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/jumping-jacks" },
+            { name: "Squat Jumps", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-jumps" },
+            { name: "Squat To Toe Touch", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-to-toe-touch" },
+            { name: "Sumo Squat With Calf Raise", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/sumo-squat-with-calf-raise" }
+        ];
+
+        const quadricepsExercises = [
+            { name: "Jump In Jump Out", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/jump-in-jump-out" },
+            { name: "Lunge With Kick", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/lunge-with-kick" },
+            { name: "Plank To Jump Squat", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/plank-to-jump-squat" },
+            { name: "Pulse Lunges", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/pulse-lunges" },
+            { name: "Punch And Kick", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/punch-and-kick" },
+            { name: "Squat Hold", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/squat-hold" },
+            { name: "Squat Hold With Calf Raise", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-hold-with-calf-raise" },
+            { name: "Squat Jumps", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-jumps" },
+            { name: "Squat To Toe Touch", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-to-toe-touch" },
+            { name: "Squat With Cross Elbow", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-with-cross-elbow" },
+            { name: "Squat With Side Leg Lift", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/squat-with-side-leg-lift" },
+            { name: "Sumo Squat With Calf Raise", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/sumo-squat-with-calf-raise" },
+            { name: "Barbell Hack Squats", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/barbell-hack-squats" },
+            { name: "Barbell Squats", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/barbell-squats" },
+            { name: "Bodyweight Squats", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/bodyweight-squats" },
+            { name: "Dumbbell Lunges", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/dumbbell-lunges" },
+            { name: "Dumbbell Squats", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/dumbbell-squats" },
+            { name: "Front Barbell Squats", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/front-barbell-squats" },
+            { name: "Goblet Squats", equipment: "Kettlebell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/goblet-squats" },
+            { name: "Leg Extensions", equipment: "Leg Extension Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/leg-extensions" },
+            { name: "Lunges", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/lunges" },
+            { name: "Machine Hack Squats", equipment: "Hack Squat Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/machine-hack-squats" },
+            { name: "Machine Leg Press", equipment: "Leg Press Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/machine-leg-press" },
+            { name: "Smith Machine Squats", equipment: "Smith Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/smith-machine-squats" },
+            { name: "Curtsy Lunges", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/curtsy-lunges" },
+            { name: "Forward Lunges", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/forward-lunges" },
+            { name: "High Knees", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/high-knees" },
+            { name: "Skater Hops", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/skater-hops" }
+        ];
+
+        const calvesExercises = [
+            { name: "Jumping Jacks", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/jumping-jacks" },
+            { name: "Squat Hold With Calf Raise", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-hold-with-calf-raise" },
+            { name: "Squat Jumps", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-jumps" },
+            { name: "Sumo Squat With Calf Raise", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/sumo-squat-with-calf-raise" },
+            { name: "Leg Press Calf Press", equipment: "Leg Press Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/leg-press-calf-press" },
+            { name: "Seated Barbell Calf Raise", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/seated-barbell-calf-raise" },
+            { name: "Seated Machine Calf Raises", equipment: "Seated Calf Raise Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/seated-machine-calf-raises" },
+            { name: "Smith Machine Calf Raises", equipment: "Smith Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/smith-machine-calf-raises" },
+            { name: "Standing Dumbbell Calf Raises", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/standing-dumbbell-calf-raises" }
+        ];
+
+        const glutesExercises = [
+            { name: "Jumping Jacks", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/jumping-jacks" },
+            { name: "Punch And Kick", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/punch-and-kick" },
+            { name: "Reverse Plank", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/reverse-plank" },
+            { name: "Squat To Toe Touch", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-to-toe-touch" },
+            { name: "Bodyweight Squats", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/bodyweight-squats" },
+            { name: "Barbell Bench Hip Thrust", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/barbell-bench-hip-thrust" },
+            { name: "Barbell Glute Bridge", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/barbell-glute-bridge" },
+            { name: "Glute Bridge", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/glute-bridge" },
+            { name: "Glute Kickback", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/glute-kickback" },
+            { name: "Lying Bench Flutter Kicks", equipment: "Bench", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/lying-bench-flutter-kicks" },
+            { name: "Single Leg Glute Bridge", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/single-leg-glute-bridge" },
+            { name: "Alternating Fire Hydrants", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/alternating-fire-hydrants" },
+            { name: "Alternating Power Lunges", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/alternating-power-lunges" },
+            { name: "Donkey Whips", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/donkey-whips" },
+            { name: "Jumping Lunges", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/jumping-lunges" },
+            { name: "One Legged Balance Taps", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/one-legged-balance-taps" },
+            { name: "One Sided Fire Hydrants", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/one-sided-fire-hydrants" },
+            { name: "Power Lunges", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/power-lunges" },
+            { name: "Side Step Squats", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/side-step-squats" },
+            { name: "Single Leg Reach And Jump", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/single-leg-reach-and-jump" },
+            { name: "Barbell Goodmornings", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/barbell-goodmornings" },
+            { name: "Barbell Rack Pulls", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/barbell-rack-pulls" },
+            { name: "Barbell RDL (Romanian Deadlift)", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/barbell-rdl" },
+            { name: "Dumbbell Deadlift", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/dumbbell-deadlift" },
+            { name: "Dumbbell Romanian Deadlift", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/dumbbell-romanian-deadlift" },
+            { name: "Kettlebell Romanian Deadlift", equipment: "Kettlebell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/kettlebell-romanian-deadlift" },
+            { name: "Seated Barbell Goodmornings", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/seated-barbell-goodmornings" }
+        ];
+
+        const hamstringsExercises = [
+            { name: "Jumping Jacks", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/jumping-jacks" },
+            { name: "Plank To Jump Squat", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/plank-to-jump-squat" },
+            { name: "Punch And Kick", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/punch-and-kick" },
+            { name: "Reverse Plank", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/reverse-plank" },
+            { name: "Squat Jumps", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-jumps" },
+            { name: "Squat To Toe Touch", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-to-toe-touch" },
+            { name: "Squat With Cross Elbow", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-with-cross-elbow" },
+            { name: "Squat With Side Leg Lift", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/squat-with-side-leg-lift" },
+            { name: "Sumo Squat With Calf Raise", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/sumo-squat-with-calf-raise" },
+            { name: "Barbell Deadlift", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/barbell-deadlift" },
+            { name: "Lying Leg Curls", equipment: "Leg Curl Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/lying-leg-curls" },
+            { name: "Seated Leg Curls", equipment: "Leg Curl Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/seated-leg-curls" },
+            { name: "Single Leg Deadlift", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/single-leg-deadlift" },
+            { name: "Stiff Legged Dumbbell Deadlift", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/stiff-legged-dumbbell-deadlift" }
+        ];
+
+        const latsExercises = [
+            { name: "Jumping Jacks", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/jumping-jacks" },
+            { name: "Superman Pull", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/superman-pull" },
+            { name: "Behind Neck Lat Pulldown", equipment: "Lat Pulldown Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/behind-neck-lat-pulldown" },
+            { name: "Bodyweight Pullups", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/bodyweight-pullups" },
+            { name: "Cable Incline Pushdown", equipment: "Cable Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/cable-incline-pushdown" },
+            { name: "Lat Pulldown", equipment: "Lat Pulldown Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/lat-pulldown" },
+            { name: "Standing Straight Arm Pushdown", equipment: "Cable Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/standing-straight-arm-pushdown" },
+            { name: "Underhand Cable Pulldowns", equipment: "Cable Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/underhand-cable-pulldowns" },
+            { name: "Wide Grip Pullups", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/wide-grip-pullups" }
+        ];
+
+        const shouldersExercises = [
+            { name: "Jumping Jacks", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/jumping-jacks" },
+            { name: "Punch And Kick", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/punch-and-kick" },
+            { name: "Side Plank Leg Pull", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/side-plank-leg-pull" },
+            { name: "Arnold Dumbbell Press", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/arnold-dumbbell-press" },
+            { name: "Barbell Upright Row", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/barbell-upright-row" },
+            { name: "Cable Rear Delt Flyes", equipment: "Cable Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/cable-rear-delt-flyes" },
+            { name: "Front Dumbbell Raises", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/front-dumbbell-raises" },
+            { name: "Lateral Dumbbell Raises", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/lateral-dumbbell-raises" },
+            { name: "Machine Shoulder Press", equipment: "Shoulder Press Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/machine-shoulder-press" },
+            { name: "Palms In Shoulder Press", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/palms-in-shoulder-press" },
+            { name: "Rear Delt Dumbbell Raises", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/rear-delt-dumbbell-raises" },
+            { name: "Reverse Machine Flyes", equipment: "Reverse Fly Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/reverse-machine-flyes" },
+            { name: "Seated Barbell Shoulder Press", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/seated-barbell-shoulder-press" },
+            { name: "Seated Dumbbell Shoulder Press", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/seated-dumbbell-shoulder-press" },
+            { name: "Seated Lateral Dumbbell Raises", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/seated-lateral-dumbbell-raises" },
+            { name: "Seated Rear Delt Dumbbell Raises", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/seated-rear-delt-dumbbell-raises" },
+            { name: "Smith Machine Upright Row", equipment: "Smith Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/smith-machine-upright-row" },
+            { name: "Standing Barbell Shoulder Press", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/standing-barbell-shoulder-press" },
+            { name: "Standing Dumbbell Shoulder Press", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/standing-dumbbell-shoulder-press" },
+            { name: "Modified Handstand Pushups", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/modified-handstand-pushups" }
+        ];
+
+        const trapsExercises = [
+            { name: "Jumping Jacks", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/jumping-jacks" },
+            { name: "Barbell Shrugs", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/barbell-shrugs" },
+            { name: "Cable Shrugs", equipment: "Cable Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/cable-shrugs" },
+            { name: "Dumbbell Shrugs", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/dumbbell-shrugs" },
+            { name: "Rear Smith Machine Shrugs", equipment: "Smith Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/rear-smith-machine-shrugs" },
+            { name: "Smith Machine Shrugs", equipment: "Smith Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/smith-machine-shrugs" },
+            { name: "Barbell Upright Row", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/barbell-upright-row" },
+            { name: "Smith Machine Upright Row", equipment: "Smith Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/smith-machine-upright-row" }
+        ];
+
+        const abductorExercises = [
+            { name: "Jumping Jacks", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/jumping-jacks" },
+            { name: "Outer Leg Lift", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/outer-leg-lift" },
+            { name: "Outer Thigh Lift", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/outer-thigh-lift" },
+            { name: "Side Plank Leg Pull", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/side-plank-leg-pull" },
+            { name: "Squat Jumps", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-jumps" },
+            { name: "Squat With Side Leg Lift", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/squat-with-side-leg-lift" }
+        ];
+
+        const bicepsExercises = [
+            { name: "Punch And Kick", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/punch-and-kick" },
+            { name: "Alternate Hammer Curl", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/alternate-hammer-curl" },
+            { name: "Alternate Incline Dumbbell Curl", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/alternate-incline-dumbbell-curl" },
+            { name: "Barbell Bicep Curl", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/barbell-bicep-curl" },
+            { name: "Cable Curl", equipment: "Cable Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/cable-curl" },
+            { name: "Close-Grip Standing Barbell Curl", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/close-grip-standing-barbell-curl" },
+            { name: "Concentration Curls", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/concentration-curls" },
+            { name: "Cross Body Hammer Curl", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/cross-body-hammer-curl" },
+            { name: "Drag Curl", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/drag-curl" },
+            { name: "Dumbbell Alternate Bicep Curls", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/dumbbell-alternate-bicep-curls" },
+            { name: "Dumbbell Bicep Curls", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/dumbbell-bicep-curls" },
+            { name: "Dumbbell Drag Curl", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/dumbbell-drag-curl" },
+            { name: "Dumbbell Prone Incline Curl", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/dumbbell-prone-incline-curl" },
+            { name: "Incline Dumbbell Curl", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/incline-dumbbell-curl" },
+            { name: "Incline Hammer Curls", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/incline-hammer-curls" },
+            { name: "Machine Preacher Curls", equipment: "Preacher Curl Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/machine-preacher-curls" },
+            { name: "Overhead Cable Curl", equipment: "Cable Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/overhead-cable-curl" },
+            { name: "Preacher Curls", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/preacher-curls" },
+            { name: "Preacher Hammer Dumbbell Curl", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/preacher-hammer-dumbbell-curl" },
+            { name: "Reverse Barbell Curl", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/reverse-barbell-curl" },
+            { name: "Reverse Cable Curl", equipment: "Cable Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/reverse-cable-curl" },
+            { name: "Reverse Plate Curls", equipment: "Plate", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/reverse-plate-curls" },
+            { name: "Reverse Preacher Curls", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/reverse-preacher-curls" },
+            { name: "Seated Close-Grip Concentration Barbell Curl", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/seated-close-grip-concentration-barbell-curl" },
+            { name: "Seated Dumbbell Curl", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/seated-dumbbell-curl" },
+            { name: "Seated Dumbbell Inner Biceps Curl", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/seated-dumbbell-inner-biceps-curl" },
+            { name: "Standing Concentration Curl", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/standing-concentration-curl" },
+            { name: "Standing Dumbbell Reverse Curl", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/standing-dumbbell-reverse-curl" },
+            { name: "Standing Inner-Biceps Curl", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/standing-inner-biceps-curl" },
+            { name: "Two-Arm Dumbbell Preacher Curl", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/two-arm-dumbbell-preacher-curl" },
+            { name: "Bodyweight Pullups", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/bodyweight-pullups" }
+        ];
+
+        const lowerBackExercises = [
+            { name: "Reverse Plank", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/reverse-plank" },
+            { name: "Superman Pull", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/superman-pull" }
+        ];
+
+        const obliquesExercises = [
+            { name: "Decline Oblique Crunches", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/decline-oblique-crunches" },
+            { name: "Dumbbell Side Bend", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/dumbbell-side-bend" },
+            { name: "Oblique Cable Crunch", equipment: "Cable Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/oblique-cable-crunch" },
+            { name: "Oblique Crunches", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/oblique-crunches" },
+            { name: "Plate Twist", equipment: "Plate", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/plate-twist" },
+            { name: "Russian Twist", equipment: "Exercise Ball", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/russian-twist" },
+            { name: "Seated Barbell Twist", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/seated-barbell-twist" },
+            { name: "Side Bridge", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/side-bridge" },
+            { name: "Side Jackknifes", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/side-jackknifes" },
+            { name: "Standing Cable Lift", equipment: "Cable Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/standing-cable-lift" },
+            { name: "Windscreen Wiper", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/windscreen-wiper" },
+            { name: "Woodchop", equipment: "Cable Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/woodchop" },
+            { name: "Forearm Side Plank Twists", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/forearm-side-plank-twists" },
+            { name: "Standing Oblique Crunches", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/standing-oblique-crunches" },
+            { name: "Trunk Rotations", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/trunk-rotations" }
+        ];
+
+        const middleBackExercises = [
+            { name: "Superman Pull", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/superman-pull" }
+        ];
+
+        const forearmsExercises = [
+            { name: "Reverse Plate Curls", equipment: "Plate", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/reverse-plate-curls" },
+            { name: "Bodyweight Hang", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/bodyweight-hang" },
+            { name: "Palms Down Barbell Wrist Curl", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/palms-down-barbell-wrist-curl" },
+            { name: "Palms Up Barbell Wrist Curl", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/palms-up-barbell-wrist-curl" },
+            { name: "Seated Barbell Finger Curls", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/seated-barbell-finger-curls" },
+            { name: "Standing Behind-the-back Wrist Curls", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/standing-behind-the-back-wrist-curls" }
+        ];
+
+        const cardioExercises = [
+            { name: "Elliptical", equipment: "Elliptical Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/elliptical" },
+            { name: "Rowing", equipment: "Rowing Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/rowing" },
+            { name: "Spin Bike", equipment: "Spin Bike", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/spin-bike" },
+            { name: "Stairmaster", equipment: "Stairmaster", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/stairmaster" },
+            { name: "Stationary Bike", equipment: "Stationary Bike", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/stationary-bike" },
+            { name: "Treadmill", equipment: "Treadmill", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/treadmill" }
+        ];
+
+        const chestExercises = [
+            { name: "Alternating Shuffle Pushups", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/alternating-shuffle-pushups" },
+            { name: "Barbell Bench Press", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/barbell-bench-press" },
+            { name: "Cable Cross Overs", equipment: "Cable Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/cable-cross-overs" },
+            { name: "Cable Upper Cross Overs", equipment: "Cable Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/cable-upper-cross-overs" },
+            { name: "Close Grip Bench Press", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/close-grip-bench-press" },
+            { name: "Crush-Grip Dumbbell Bench Press", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/crush-grip-dumbbell-bench-press" },
+            { name: "Decline Dumbbell Bench Press", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/decline-dumbbell-bench-press" },
+            { name: "Decline Dumbbell Flyes", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/decline-dumbbell-flyes" },
+            { name: "Decline Pushups", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/decline-pushups" },
+            { name: "Dumbbell Bench Press", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/dumbbell-bench-press" },
+            { name: "Dumbbell Bridge Chest Press", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/dumbbell-bridge-chest-press" },
+            { name: "Dumbbell Fly", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/dumbbell-fly" },
+            { name: "Extended Arm Pushup", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/extended-arm-pushup" },
+            { name: "Incline Barbell Bench Press", equipment: "Barbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/incline-barbell-bench-press" },
+            { name: "Incline Bench Cable Fly", equipment: "Cable Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/incline-bench-cable-fly" },
+            { name: "Incline Dumbbell Bench Press", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/incline-dumbbell-bench-press" },
+            { name: "Incline Dumbbell Flyes", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/incline-dumbbell-flyes" },
+            { name: "Incline Pushups", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/incline-pushups" },
+            { name: "Knee Pushups", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/knee-pushups" },
+            { name: "Knee Pushups Wide", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/knee-pushups-wide" },
+            { name: "Knuckle Pushup", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/knuckle-pushup" },
+            { name: "Lay Down Pushup", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/lay-down-pushup" },
+            { name: "Low Cable Crossover", equipment: "Cable Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/low-cable-crossover" },
+            { name: "Machine Chest Fly", equipment: "Chest Fly Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/machine-chest-fly" },
+            { name: "Machine Chest Press", equipment: "Chest Press Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/machine-chest-press" },
+            { name: "Pushups", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/pushups" },
+            { name: "Single Leg Knuckle Pushup", equipment: "Bodyweight", difficulty: "Advanced", link: "https://www.gymstreak.com/exercises/single-leg-knuckle-pushup" },
+            { name: "Single Leg Pushup", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/single-leg-pushup" },
+            { name: "Single Leg Pushup Diamond", equipment: "Bodyweight", difficulty: "Advanced", link: "https://www.gymstreak.com/exercises/single-leg-pushup-diamond" },
+            { name: "Single Leg Pushup Wide", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/single-leg-pushup-wide" },
+            { name: "Slow Motion Pushup", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/slow-motion-pushup" },
+            { name: "Smith Machine Bench Press", equipment: "Smith Machine", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/smith-machine-bench-press" },
+            { name: "Smith Machine Decline Bench Press", equipment: "Smith Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/smith-machine-decline-bench-press" },
+            { name: "Smith Machine Incline Bench Press", equipment: "Smith Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/smith-machine-incline-bench-press" },
+            { name: "Straight Arm Pullover", equipment: "Dumbbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/straight-arm-pullover" },
+            { name: "Twisting Dumbbell Bench Press", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/twisting-dumbbell-bench-press" },
+            { name: "Clap Pushups", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/clap-pushups" },
+            { name: "Plank To Pushups", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/plank-to-pushups" },
+            { name: "Single Leg Walkout To Pushups", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/single-leg-walkout-to-pushups" },
+            { name: "Wide Grip Pushups", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/wide-grip-pushups" }
+        ];
+
+        const absExercises = [
+            { name: "Cross Elbow", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/cross-elbow" },
+            { name: "Jumping Jacks", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/jumping-jacks" },
+            { name: "Lying Toe Taps", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/lying-toe-taps" },
+            { name: "Plank To Jump Squat", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/plank-to-jump-squat" },
+            { name: "Plank With Reach Out", equipment: "Bodyweight", difficulty: "Advanced", link: "https://www.gymstreak.com/exercises/plank-with-reach-out" },
+            { name: "Punch And Kick", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/punch-and-kick" },
+            { name: "Reverse Plank", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/reverse-plank" },
+            { name: "Side Plank Leg Pull", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/side-plank-leg-pull" },
+            { name: "Squat Jumps", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-jumps" },
+            { name: "Squat To Toe Touch", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/squat-to-toe-touch" },
+            { name: "Alternate Heel Touches", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/alternate-heel-touches" },
+            { name: "Barbell Ab Rollout", equipment: "Bodyweight", difficulty: "Advanced", link: "https://www.gymstreak.com/exercises/barbell-ab-rollout" },
+            { name: "Butt-Ups", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/butt-ups" },
+            { name: "Cable Crunch", equipment: "Cable Machine", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/cable-crunch" },
+            { name: "Cocoons", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/cocoons" },
+            { name: "Crab Toe Touch", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/crab-toe-touch" },
+            { name: "Cross-Body Crunch", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/cross-body-crunch" },
+            { name: "Crunches", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/crunches" },
+            { name: "Dead Bug", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/dead-bug" },
+            { name: "Decline Crunches", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/decline-crunches" },
+            { name: "Decline Situps", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/decline-situps" },
+            { name: "Elbow to Knee", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/elbow-to-knee" },
+            { name: "Hanging Leg Raise", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/hanging-leg-raise" },
+            { name: "Hanging Pike", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/hanging-pike" },
+            { name: "Jackknife Sit-Up", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/jackknife-sit-up" },
+            { name: "Leg Raises", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/leg-raises" },
+            { name: "Plank", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/plank" },
+            { name: "Press Sit-Up", equipment: "Barbell", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/press-sit-up" },
+            { name: "Reverse Crunch", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/reverse-crunch" },
+            { name: "Scissor Kick", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/scissor-kick" },
+            { name: "Shoulder Taps", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/shoulder-taps" },
+            { name: "Situps", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/situps" },
+            { name: "Toe Touchers", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/toe-touchers" },
+            { name: "Tuck Crunch", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/tuck-crunch" },
+            { name: "Weighted Crunches", equipment: "Dumbbell", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/weighted-crunches" },
+            { name: "Ankle Tap Pushups", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/ankle-tap-pushups" },
+            { name: "Bird Dog Crunch", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/bird-dog-crunch" },
+            { name: "Extended Leg Pulses", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/extended-leg-pulses" },
+            { name: "Lateral Plank Walks", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/lateral-plank-walks" },
+            { name: "Mountain Climbers Fast", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/mountain-climbers-fast" },
+            { name: "Mountain Climbers Slow", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/mountain-climbers-slow" },
+            { name: "Plank Hops", equipment: "Bodyweight", difficulty: "Advanced", link: "https://www.gymstreak.com/exercises/plank-hops" },
+            { name: "Plank Ups", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/plank-ups" },
+            { name: "Plank With T Rotations", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/plank-with-t-rotations" },
+            { name: "Side Plank Rotation With Kicks", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/side-plank-rotation-with-kicks" },
+            { name: "Sit-Ups To Twists", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/sit-ups-to-twists" },
+            { name: "Spider Mountain Climbers", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/spider-mountain-climbers" },
+            { name: "Star Planks", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/star-planks" },
+            { name: "Starfish Crunch", equipment: "Bodyweight", difficulty: "Beginner", link: "https://www.gymstreak.com/exercises/starfish-crunch" },
+            { name: "Straight Arm Plank Jacks", equipment: "Bodyweight", difficulty: "Intermediate", link: "https://www.gymstreak.com/exercises/straight-arm-plank-jacks" }
+        ];
+
+        // Combine all exercises into one array for easier processing (UNCHANGED)
+        const allExercises = [
+            ...tricepsExercises, ...adductorExercises, ...quadricepsExercises, ...calvesExercises,
+            ...glutesExercises, ...hamstringsExercises, ...latsExercises, ...shouldersExercises,
+            ...trapsExercises, ...abductorExercises, ...bicepsExercises, ...lowerBackExercises,
+            ...obliquesExercises, ...middleBackExercises, ...forearmsExercises, ...cardioExercises,
+            ...chestExercises, ...absExercises
+        ];
+
+        // Muscle groups with updated exercise counts (UNCHANGED)
+        const muscleGroups = [
+            { name: "Chest", count: chestExercises.length },
+            { name: "Abs", count: absExercises.length },
+            { name: "Triceps", count: tricepsExercises.length },
+            { name: "Adductor", count: adductorExercises.length },
+            { name: "Quadriceps", count: quadricepsExercises.length },
+            { name: "Calves", count: calvesExercises.length },
+            { name: "Glutes", count: glutesExercises.length },
+            { name: "Hamstrings", count: hamstringsExercises.length },
+            { name: "Lats", count: latsExercises.length },
+            { name: "Shoulders", count: shouldersExercises.length },
+            { name: "Traps", count: trapsExercises.length },
+            { name: "Abductor", count: abductorExercises.length },
+            { name: "Biceps", count: bicepsExercises.length },
+            { name: "Lower Back", count: lowerBackExercises.length },
+            { name: "Obliques", count: obliquesExercises.length },
+            { name: "Middle Back", count: middleBackExercises.length },
+            { name: "Forearms", count: forearmsExercises.length },
+            { name: "Cardio", count: cardioExercises.length }
+        ];
+
+        // Training splits (UNCHANGED)
+        const trainingSplits = [
+            { name: "Push", muscles: ["Chest", "Shoulders", "Triceps", "Quadriceps", "Glutes", "Abs", "Calves", "Obliques"], description: "exercises that involve pushing movements" },
+            { name: "Pull", muscles: ["Back", "Lats", "Biceps", "Forearms"], description: "exercises that involve pulling movements" },
+            { name: "Legs", muscles: ["Quadriceps", "Hamstrings", "Glutes", "Calves", "Adductor", "Abductor"], description: "exercises targeting your lower body" },
+            { name: "Upper Body", muscles: ["Chest", "Shoulders", "Triceps", "Back", "Lats", "Biceps", "Forearms"], description: "exercises for your upper body" },
+            { name: "Lower Body", muscles: ["Quadriceps", "Hamstrings", "Glutes", "Calves", "Adductor", "Abductor"], description: "exercises for your lower body" },
+            { name: "Core", muscles: ["Abs", "Obliques", "Lower Back"], description: "exercises to strengthen your core" },
+            { name: "Cardio", muscles: ["Cardio"], description: "exercises to get your heart rate up" },
+            { name: "Compound", description: "multi-joint exercises that work several muscles at once" },
+            { name: "Isolation", description: "single-joint exercises that target a specific muscle" }
+        ];
+
+        // List of specific exercise names that should appear when 'Push' is clicked (UNCHANGED)
+        const specificPushExerciseNames = [
+            "Alternating Shuffle Pushups", "Extended Arm Pushup", "Floor Dips", "Jump In Jump Out",
+            "Jumping Jacks", "Knee Pushups", "Knee Pushups Diamond", "Knee Pushups Wide",
+            "Knuckle Pushup", "Lay Down Pushup", "Lunge With Kick", "Lying Toe Taps",
+            "Outer Thigh Lift", "Plank To Jump Squat", "Pulse Lunges", "Punch And Kick",
+            "Reverse Plank", "Side Plank Leg Pull", "Single Leg Knuckle Pushup", "Single Leg Pushup",
+            "Single Leg Pushup Diamond", "Single Leg Pushup Wide", "Slow Motion Pushup", "Squat Hold",
+            "Squat Hold With Calf Raise", "Squat Jumps", "Squat To Toe Touch", "Squat With Cross Elbow",
+            "Sumo Squat With Calf Raise", "Bench Dips", "Bent Over Tricep Extensions", "Close Grip Bench Press",
+            "Decline Tricep Extensions", "Diamond Pushups", "Kneeling Tricep Cable Extension", "Reverse Tricep Pushdown",
+            "Rope Tricep Pushdown", "Skull Crusher", "Tricep Dips", "Tricep Dumbbell Kickback",
+            "Tricep Pushdown", "Barbell Bench Press", "Crush-Grip Dumbbell Bench Press", "Decline Dumbbell Bench Press",
+            "Decline Dumbbell Flyes", "Decline Pushups", "Dumbbell Bench Press", "Dumbbell Bridge Chest Press",
+            "Dumbbell Fly", "Incline Barbell Bench Press", "Incline Bench Cable Fly", "Incline Dumbbell Bench Press",
+            "Incline Dumbbell Flyes", "Incline Pushups", "Machine Chest Fly", "Machine Chest Press",
+            "Pushups", "Smith Machine Bench Press", "Smith Machine Decline Bench Press", "Smith Machine Incline Bench Press",
+            "Twisting Dumbbell Bench Press", "Alternate Heel Touches", "Barbell Ab Rollout", "Butt-Ups",
+            "Cable Crunch", "Cocoons", "Crab Toe Touch", "Cross-Body Crunch",
+            "Crunches", "Dead Bug", "Decline Crunches", "Decline Situps",
+            "Elbow to Knee", "Hanging Leg Raise", "Hanging Pike", "Jackknife Sit-Up",
+            "Leg Raises", "Plank", "Press Sit-Up", "Reverse Crunch",
+            "Scissor Kick", "Shoulder Taps", "Situps", "Toe Touchers",
+            "Tuck Crunch", "Weighted Crunches", "Barbell Hack Squats", "Barbell Squats",
+            "Bodyweight Squats", "Dumbbell Lunges", "Dumbbell Squats", "Front Barbell Squats",
+            "Goblet Squats", "Leg Extensions", "Lunges", "Machine Hack Squats",
+            "Machine Leg Press", "Smith Machine Squats", "Leg Press Calf Press", "Seated Barbell Calf Raise",
+            "Seated Machine Calf Raises", "Smith Machine Calf Raises", "Standing Dumbbell Calf Raises", "Decline Oblique Crunches",
+            "Oblique Cable Crunch", "Oblique Crunches", "Plate Twist", "Russian Twist",
+            "Seated Barbell Twist", "Side Bridge", "Side Jackknifes", "Windscreen Wiper",
+            "Barbell Bench Hip Thrust", "Barbell Glute Bridge", "Glute Bridge", "Glute Kickback",
+            "Lying Bench Flutter Kicks", "Single Leg Glute Bridge", "Arnold Dumbbell Press", "Cable Rear Delt Flyes",
+            "Front Dumbbell Raises", "Machine Shoulder Press", "Palms In Shoulder Press", "Seated Barbell Shoulder Press",
+            "Seated Dumbbell Shoulder Press", "Standing Barbell Shoulder Press", "Standing Dumbbell Shoulder Press",
+            "Cable Incline Pushdown", "Standing Straight Arm Pushdown", "Superman"
+        ];
+
+
+        // DOM elements (UNCHANGED)
+        const tabs = {
+            muscle: document.getElementById('muscleTab'),
+            equipment: document.getElementById('equipmentTab'),
+            split: document.getElementById('splitTab')
+        };
+
+        const muscleGroupSection = document.getElementById('muscleGroupSection');
+        const muscleGroupHeader = document.getElementById('muscleGroupHeader');
+        const muscleGroupGrid = document.getElementById('muscleGroupGrid');
+
+        const equipmentSection = document.getElementById('equipmentSection');
+        const equipmentHeader = document.getElementById('equipmentHeader');
+        const equipmentGrid = document.getElementById('equipmentGrid');
+
+        const trainingSplitSection = document.getElementById('trainingSplitSection');
+        const trainingSplitHeader = document.getElementById('trainingSplitHeader');
+        const trainingSplitGrid = document.getElementById('trainingSplitGrid');
+
+        const exercisesHeader = document.getElementById('exercisesHeader');
+        const exercisesTitle = document.getElementById('exercisesTitle');
+        const exercisesDescription = document.getElementById('exercisesDescription');
+        const backToPrevious = document.getElementById('backToPrevious');
+        const exerciseList = document.getElementById('exerciseList');
+
+        const equipmentMuscleGroupSection = document.getElementById('equipmentMuscleGroupSection');
+        const equipmentMuscleGroupHeader = document.getElementById('equipmentMuscleGroupHeader');
+        const equipmentMuscleGroupTitle = document.getElementById('equipmentMuscleGroupTitle');
+        const equipmentMuscleGroupDescription = document.getElementById('equipmentMuscleGroupDescription');
+        const backToEquipment = document.getElementById('backToEquipment');
+        const equipmentMuscleGroupGrid = document.getElementById('equipmentMuscleGroupGrid');
+
+        // State variables (UNCHANGED)
+        let activeTab = 'muscle';
+        let currentView = 'muscleGroups';
+        let currentSelectedEquipment = '';
+        let draggedItem = null; // Variable for drag and drop
+
+        // Drag and Drop Logic (UNCHANGED)
+        function applyDragAndDrop(container) {
+            container.addEventListener('dragstart', (e) => {
+                draggedItem = e.target.closest('.draggable-card');
+                if (draggedItem) {
+                    e.dataTransfer.setData('text/plain', draggedItem.id);
+                    draggedItem.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                }
+            });
+
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault(); // Allow drop
+                const draggingElement = document.querySelector('.dragging');
+                const afterElement = getDragAfterElement(container, e.clientY, e.clientX);
+
+                if (draggingElement) {
+                    if (afterElement == null) {
+                        container.appendChild(draggingElement);
+                    } else {
+                        container.insertBefore(draggingElement, afterElement);
+                    }
+                }
+            });
+
+            container.addEventListener('dragend', () => {
+                if (draggedItem) {
+                    draggedItem.classList.remove('dragging');
+                    draggedItem = null;
+                }
+            });
+        }
+
+        function getDragAfterElement(container, y, x) {
+            const draggableElements = [...container.querySelectorAll('.draggable-card:not(.dragging)')];
+
+            return draggableElements.reduce((closest, child) => {
+                const rect = child.getBoundingClientRect();
+                const offsetY = y - rect.top - rect.height / 2;
+                const offsetX = x - rect.left - rect.width / 2;
+
+                if (offsetY < 0 && Math.abs(offsetY) < Math.abs(closest.offset.y) && offsetX < rect.width / 2) {
+                    return { offset: { y: offsetY, x: offsetX }, element: child };
+                }
+                return closest;
+            }, { offset: { y: Number.POSITIVE_INFINITY, x: Number.POSITIVE_INFINITY }, element: null }).element;
+        }
+
+        // Functions to show/hide sections (MODIFIED TO USE NEW CLASSES)
+        function showExercises(exercises, categoryName, returnTo) {
+            muscleGroupSection.classList.add('hidden');
+            equipmentSection.classList.add('hidden');
+            trainingSplitSection.classList.add('hidden');
+            equipmentMuscleGroupSection.classList.add('hidden');
+            exercisesHeader.classList.remove('hidden');
+
+            exercisesTitle.textContent = `${categoryName} Exercises`;
+            exercisesDescription.textContent = `Discover our collection of ${categoryName.toLowerCase()} exercises. Perfect your form with detailed instructions and guidance.`;
+            backToPrevious.dataset.returnTo = returnTo;
+
+            exerciseList.innerHTML = '';
+            const uniqueExercises = new Map();
+            exercises.forEach(exercise => uniqueExercises.set(exercise.name, exercise));
+
+            Array.from(uniqueExercises.values()).forEach((exercise, index) => {
+                const card = document.createElement('div');
+                card.className = 'card draggable-card'; // Use .card class
+                card.setAttribute('draggable', 'true');
+                card.id = `exercise-${index}`;
+                card.innerHTML = `
+                    <div class="flex-grow">
+                        <h2>${exercise.name}</h2>
+                        <p><span class="font-bold">Equipment:</span> ${exercise.equipment}</p>
+                        <p><span class="font-bold">Difficulty:</span> ${exercise.difficulty}</p>
+                    </div>
+                `;
+                card.addEventListener('click', () => {
+                    if (exercise.link) {
+                        window.open(exercise.link, '_blank');
+                    }
+                });
+                exerciseList.appendChild(card);
+            });
+            currentView = 'exercises';
+            applyDragAndDrop(exerciseList);
+        }
+
+        function showMuscleGroups() {
+            muscleGroupSection.classList.remove('hidden');
+            equipmentSection.classList.add('hidden');
+            trainingSplitSection.classList.add('hidden');
+            equipmentMuscleGroupSection.classList.add('hidden');
+            exercisesHeader.classList.add('hidden');
+            exerciseList.innerHTML = '';
+            currentView = 'muscleGroups';
+            applyDragAndDrop(muscleGroupGrid);
+        }
+
+        function showEquipmentTypes() {
+            muscleGroupSection.classList.add('hidden');
+            equipmentSection.classList.remove('hidden');
+            trainingSplitSection.classList.add('hidden');
+            equipmentMuscleGroupSection.classList.add('hidden');
+            exercisesHeader.classList.add('hidden');
+            exerciseList.innerHTML = '';
+            currentView = 'equipmentTypes';
+            applyDragAndDrop(equipmentGrid);
+        }
+
+        function showTrainingSplits() {
+            muscleGroupSection.classList.add('hidden');
+            equipmentSection.classList.add('hidden');
+            trainingSplitSection.classList.remove('hidden');
+            equipmentMuscleGroupSection.classList.add('hidden');
+            exercisesHeader.classList.add('hidden');
+            exerciseList.innerHTML = '';
+            currentView = 'trainingSplits';
+            applyDragAndDrop(trainingSplitGrid);
+        }
+
+        function showEquipmentMuscleGroups(equipmentName, musclesForEquipment) {
+            muscleGroupSection.classList.add('hidden');
+            equipmentSection.classList.add('hidden');
+            trainingSplitSection.classList.add('hidden');
+            exercisesHeader.classList.add('hidden');
+            exerciseList.innerHTML = '';
+
+            equipmentMuscleGroupSection.classList.remove('hidden');
+            equipmentMuscleGroupTitle.textContent = `${equipmentName} - Muscle Groups`;
+            equipmentMuscleGroupDescription.textContent = `Select a muscle group to view exercises using ${equipmentName}.`;
+            equipmentMuscleGroupGrid.innerHTML = '';
+
+            currentSelectedEquipment = equipmentName;
+
+            musclesForEquipment.forEach((muscleName, index) => {
+                const muscleCard = document.createElement('div');
+                muscleCard.className = 'card draggable-card'; // Use .card class
+                muscleCard.setAttribute('draggable', 'true');
+                muscleCard.id = `equipment-muscle-${index}`;
+                const muscleExercises = allExercises.filter(ex => ex.equipment === equipmentName && getExercisesByMuscleName(muscleName).some(mEx => mEx.name === ex.name));
+
+                muscleCard.innerHTML = `
+                    <h3 class="font-semibold capitalize">${muscleName}</h3>
+                    <p class="text-sm">${muscleExercises.length} exercises available</p>
+                `;
+                muscleCard.addEventListener('click', () => {
+                    showExercises(muscleExercises, `${equipmentName} - ${muscleName}`, 'equipmentMuscleGroups');
+                });
+                equipmentMuscleGroupGrid.appendChild(muscleCard);
+            });
+            currentView = 'equipmentMuscleGroups';
+            applyDragAndDrop(equipmentMuscleGroupGrid);
+        }
+
+        // Helper to get exercises by muscle name (UNCHANGED)
+        function getExercisesByMuscleName(muscleName) {
+            switch (muscleName) {
+                case "Chest": return chestExercises;
+                case "Abs": return absExercises;
+                case "Triceps": return tricepsExercises;
+                case "Adductor": return adductorExercises;
+                case "Quadriceps": return quadricepsExercises;
+                case "Calves": return calvesExercises;
+                case "Glutes": return glutesExercises;
+                case "Hamstrings": return hamstringsExercises;
+                case "Lats": return latsExercises;
+                case "Shoulders": return shouldersExercises;
+                case "Traps": return trapsExercises;
+                case "Abductor": return abductorExercises;
+                case "Biceps": return bicepsExercises;
+                case "Lower Back": return lowerBackExercises;
+                case "Obliques": return obliquesExercises;
+                case "Middle Back": return middleBackExercises;
+                case "Forearms": return forearmsExercises;
+                case "Cardio": return cardioExercises;
+                case "Back": return [...latsExercises, ...middleBackExercises, ...lowerBackExercises];
+                default: return [];
+            }
+        }
+
+        // Functions to populate grids (MODIFIED TO USE NEW CLASSES and NEW FLEX WRAPPER)
+        function populateMuscleGroups() {
+            muscleGroupGrid.innerHTML = '';
+            muscleGroups.forEach((group, index) => {
+                const muscleCard = document.createElement('div');
+                muscleCard.className = 'card draggable-card'; // Use .card class
+                muscleCard.setAttribute('draggable', 'true');
+                muscleCard.id = `muscle-${index}`; // Fixed: Changed 'card.id' to 'muscleCard.id'
+                muscleCard.innerHTML = `
+                    <h3 class="font-semibold capitalize">${group.name}</h3>
+                    <p class="text-sm">${group.count} exercises available</p>
+                `;
+                muscleCard.addEventListener('click', () => {
+                    const relevantExercises = getExercisesByMuscleName(group.name);
+                    const seenNames = new Set();
+                    const uniqueExercises = relevantExercises.filter(ex => {
+                        const duplicate = seenNames.has(ex.name);
+                        seenNames.add(ex.name);
+                        return !duplicate;
+                    });
+                    showExercises(uniqueExercises, group.name, 'muscleGroups');
+                });
+                muscleGroupGrid.appendChild(muscleCard);
+            });
+            applyDragAndDrop(muscleGroupGrid);
+        }
+
+        function populateEquipmentTypes() {
+            equipmentGrid.innerHTML = '';
+            const equipmentMap = new Map();
+
+            allExercises.forEach(exercise => {
+                const equipmentName = exercise.equipment;
+                if (!equipmentMap.has(equipmentName)) {
+                    equipmentMap.set(equipmentName, { exercises: [], muscles: new Set() });
+                }
+                equipmentMap.get(equipmentName).exercises.push(exercise);
+                for (const muscleGroup of muscleGroups) {
+                    const exercisesInThisMuscleGroup = getExercisesByMuscleName(muscleGroup.name);
+                    if (exercisesInThisMuscleGroup.some(ex => ex.name === exercise.name && ex.equipment === exercise.equipment)) {
+                        // Fixed: Changed 'musclesForEquipment.add' to 'equipmentMap.get(equipmentName).muscles.add'
+                        equipmentMap.get(equipmentName).muscles.add(muscleGroup.name);
+                    }
+                }
+            });
+
+            const sortedEquipment = Array.from(equipmentMap.entries()).sort((a, b) => b[1].exercises.length - a[1].exercises.length);
+
+            sortedEquipment.forEach(([equipmentName, data], index) => {
+                const equipmentCard = document.createElement('div');
+                equipmentCard.className = 'card draggable-card'; // Use .card class
+                equipmentCard.setAttribute('draggable', 'true');
+                equipmentCard.id = `equipment-${index}`;
+
+                const musclesList = Array.from(data.muscles).map(muscle => `<span class="inline-block">${muscle}</span>`).join('');
+
+                equipmentCard.innerHTML = `
+                    <h3 class="font-semibold capitalize">${equipmentName} Exercises</h3>
+                    <p class="text-sm">${data.exercises.length} exercises available</p>
+                    <div class="card-muscle-tags"> <!-- Wrapper for muscle tags -->
+                        <span class="font-bold">Muscles:</span>
+                        <div class="flex-row-wrap">${musclesList}</div> <!-- Apply flex-row-wrap here -->
+                    </div>
+                `;
+                equipmentCard.addEventListener('click', () => {
+                    showEquipmentMuscleGroups(equipmentName, Array.from(data.muscles).sort());
+                });
+                equipmentGrid.appendChild(equipmentCard);
+            });
+            applyDragAndDrop(equipmentGrid);
+        }
+
+        function populateTrainingSplits() {
+            trainingSplitGrid.innerHTML = '';
+
+            trainingSplits.forEach((split, index) => {
+                const splitCard = document.createElement('div');
+                splitCard.className = 'card draggable-card'; // Use .card class
+                splitCard.setAttribute('draggable', 'true');
+                splitCard.id = `split-${index}`;
+
+                let relevantExercises = [];
+                if (split.name === "Push") {
+                    relevantExercises = allExercises.filter(ex => specificPushExerciseNames.includes(ex.name));
+                } else if (split.name === "Compound") {
+                    relevantExercises = allExercises.filter(ex => 
+                        (ex.name.toLowerCase().includes("press") && (ex.name.toLowerCase().includes("bench") || ex.name.toLowerCase().includes("shoulder"))) ||
+                        ex.name.toLowerCase().includes("squat") ||
+                        ex.name.toLowerCase().includes("deadlift") ||
+                        ex.name.toLowerCase().includes("row") ||
+                        ex.name.toLowerCase().includes("pullup")
+                    );
+                } else if (split.name === "Isolation") {
+                    relevantExercises = allExercises.filter(ex => 
+                        ex.name.toLowerCase().includes("curl") ||
+                        ex.name.toLowerCase().includes("extension") ||
+                        ex.name.toLowerCase().includes("raise") ||
+                        ex.name.toLowerCase().includes("fly") ||
+                        ex.name.toLowerCase().includes("crunch") ||
+                        ex.name.toLowerCase().includes("kickback")
+                    );
+                } else {
+                    const muscleNames = split.muscles;
+                    const exercisesForSplit = new Set(); 
+
+                    muscleNames.forEach(muscle => {
+                        const exercisesFromMuscle = getExercisesByMuscleName(muscle);
+                        exercisesFromMuscle.forEach(ex => exercisesForSplit.add(ex));
+                    });
+                    relevantExercises = Array.from(exercisesForSplit);
+                }
+
+                const seenNames = new Set();
+                relevantExercises = relevantExercises.filter(ex => {
+                    const duplicate = seenNames.has(ex.name);
+                    seenNames.add(ex.name);
+                    return !duplicate;
+                });
+
+                splitCard.innerHTML = `
+                    <h3 class="font-semibold capitalize">${split.name}</h3>
+                    <p class="text-sm">${relevantExercises.length} exercises available</p>
+                    <p class="text-xs">${split.description}</p>
+                `;
+                splitCard.addEventListener('click', () => {
+                    showExercises(relevantExercises, split.name, 'trainingSplits');
+                });
+                trainingSplitGrid.appendChild(splitCard);
+            });
+            applyDragAndDrop(trainingSplitGrid);
+        }
+
+        // Function to switch tabs
+        function switchTab(newTab) {
+            activeTab = newTab;
+
+            Object.values(tabs).forEach(tab => {
+                tab.classList.remove('active');
+            });
+            tabs[newTab].classList.add('active');
+
+            if (newTab === 'muscle') {
+                showMuscleGroups();
+                populateMuscleGroups(); // Re-populate on tab switch
+            } else if (newTab === 'equipment') {
+                showEquipmentTypes();
+                populateEquipmentTypes(); // Re-populate on tab switch
+            } else if (newTab === 'split') {
+                showTrainingSplits();
+                populateTrainingSplits(); // Re-populate on tab switch
+            } else {
+                muscleGroupSection.classList.add('hidden');
+                equipmentSection.classList.add('hidden');
+                trainingSplitSection.classList.add('hidden');
+                equipmentMuscleGroupSection.classList.add('hidden');
+                exercisesHeader.classList.add('hidden');
+                exerciseList.innerHTML = '<p class="text-center" style="color: #ccc;">Content for this section is coming soon!</p>';
+            }
+        }
+
+        // Event listeners (UNCHANGED)
+        backToPrevious.addEventListener('click', () => {
+            if (backToPrevious.dataset.returnTo === 'muscleGroups') {
+                showMuscleGroups();
+            } else if (backToPrevious.dataset.returnTo === 'equipmentTypes') {
+                showEquipmentTypes();
+            } else if (backToPrevious.dataset.returnTo === 'trainingSplits') {
+                showTrainingSplits();
+            } else if (backToPrevious.dataset.returnTo === 'equipmentMuscleGroups') {
+                const equipmentExercises = allExercises.filter(ex => ex.equipment === currentSelectedEquipment);
+                const musclesForEquipment = new Set();
+                equipmentExercises.forEach(ex => {
+                    for (const muscleGroup of muscleGroups) {
+                        const exercisesInThisMuscleGroup = getExercisesByMuscleName(muscleGroup.name);
+                        if (exercisesInThisMuscleGroup.some(mEx => mEx.name === ex.name)) {
+                            musclesForEquipment.add(muscleGroup.name);
+                        }
+                    }
+                });
+                showEquipmentMuscleGroups(currentSelectedEquipment, Array.from(musclesForEquipment).sort());
+            }
+        });
+
+        backToEquipment.addEventListener('click', () => {
+            showEquipmentTypes();
+        });
+
+        tabs.muscle.addEventListener('click', () => switchTab('muscle'));
+        tabs.equipment.addEventListener('click', () => switchTab('equipment'));
+        tabs.split.addEventListener('click', () => switchTab('split'));
+
+        // Initialize (UNCHANGED)
+        populateMuscleGroups();
+        populateEquipmentTypes();
+        populateTrainingSplits();
+        switchTab('muscle'); // Start on the muscle tab by default
+    </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diet Plan - Phase 4</title>
+  <link rel="icon" type="image/png" href="track-fit-icon.png" sizes="32x32" />
+  <style>
+    body {
+      background: #0f1928;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .logo {
+      position: absolute;
+      left: 0;
+      height: 50px;
+      cursor: pointer;
+    }
+    h1 {
+      font-size: 2em;
+      color: #2ba8b8;
+    }
+    h2 {
+      color: #2ba8b8;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .section {
+      background: #162c3b;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 30px;
+    }
+    .section-title {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #229fc1;
+      transition: border-bottom 0.3s ease;
+      display: inline-block;
+    }
+    .section-title:hover {
+      border-bottom: 2px solid #229fc1;
+      cursor: pointer;
+    }
+    ul {
+      line-height: 1.8;
+      padding-left: 20px;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1000px;
+      margin: 40px auto;
+    }
+    .nav-buttons a {
+      background-color: #2ba8b8;
+      color: #0f1928;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .nav-buttons a:hover {
+      background-color: #1d7c88;
+    }
+  </style>
+  <script>
+    function goHome() {
+      window.location.href = 'trackfit.html';
+    }
+  </script>
+</head>
+<body>
+  <header>
+    <img src="track-fit-full-logo.png" alt="Track Fit Logo" class="logo" onclick="goHome()" />
+    <h1>Diet Plan</h1>
+  </header>
+
+  <h2>🔥 Phase 4: Shred & Abs Reveal (March – May 2026)</h2>
+
+  <div class="section">
+    <div class="section-title">🥅 Objective</div>
+    <p>Reduce body fat further, maintain muscle mass, and reveal abs.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📊 Calories & Macros</div>
+    <ul>
+      <li>Calories: 1700–1900 kcal/day (cutting)</li>
+      <li>Protein: 2.2–2.4 g/kg (~200–220g)</li>
+      <li>Carbs: 100–150g (strategically placed)</li>
+      <li>Fats: 50–60g (emphasize omega-3s)</li>
+      <li>Sodium: < 1500 mg/day</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🥗 Key Foods</div>
+    <ul>
+      <li><strong>Proteins:</strong> Egg whites, chicken breast, white fish</li>
+      <li><strong>Carbs:</strong> Zucchini, cucumber, leafy greens, berries</li>
+      <li><strong>Fats:</strong> Olive oil, fish oil, avocado</li>
+      <li><strong>Other:</strong> High water intake, herbal detox teas</li>
+      <li><strong>Optional:</strong> Intermittent fasting or carb cycling (if suitable)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❌ Avoid</div>
+    <ul>
+      <li>High-calorie condiments, high-carb late-night snacks, cheat meals more than 1x/week</li>
+    </ul>
+  </div>
+
+  <div class="nav-buttons">
+    <a href="diet-phase3.html">← Phase III</a>
+  </div>
+</body>
+</html>

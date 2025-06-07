@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title> My Measurements </title>
+  <link rel="icon" type="image/png" href="track-fit-icon.png" sizes="32x32" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f1928;
+      color: white;
+    }
+
+    .logo {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      z-index: 999;
+    }
+
+    .logo img {
+      height: 50px;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 100px auto;
+      background-color: #111c28;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(43, 168, 184, 0.3);
+    }
+
+    h1 {
+      text-align: center;
+      color: #25a1c2;
+      margin-bottom: 30px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #25a1c2;
+      display: block;
+      margin-top: 20px;
+      margin-bottom: 5px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-row input,
+    .input-row select {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #25a1c2;
+      border-radius: 6px;
+      background-color: #0f1928;
+      color: white;
+    }
+
+    .readonly-input {
+      background-color: #222d3c;
+    }
+
+    .status-text {
+      font-size: 14px;
+      color: #a1eaf7;
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 12px 20px;
+      background-color: #2ba8b8;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #1d8c9a;
+    }
+
+    .display-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #2ba8b8;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo">
+    <a href="trackfit.html">
+      <img src="track-fit-full-logo.png" alt="Track Fit Logo" />
+    </a>
+  </div>
+
+  <div class="container">
+    <h1>Body Measurements</h1>
+
+    <div id="formMode">
+      <div id="formFields">
+        <label>Weight</label>
+        <div class="input-row">
+          <input type="number" id="weight" placeholder="e.g. 70" oninput="calculateBMI()" />
+          <select id="weightUnit">
+            <option>kg</option>
+            <option>lb</option>
+          </select>
+        </div>
+
+        <label>Height</label>
+        <div class="input-row">
+          <input type="number" id="height" placeholder="e.g. 170" oninput="calculateBMI(); calculateBodyFat()" />
+          <select id="heightUnit">
+            <option>cm</option>
+            <option>ft</option>
+            <option>in</option>
+          </select>
+        </div>
+
+        <label>BMI</label>
+        <div class="input-row">
+          <input type="text" id="bmi" class="readonly-input" readonly />
+          <span style="padding: 12px; background: #2ba8b8; border-radius: 6px;">kg/m²</span>
+        </div>
+        <div id="bmiStatusText" class="status-text"></div>
+
+        <label>Waist</label>
+        <div class="input-row">
+          <input type="number" id="waist" oninput="calculateBodyFat()" />
+          <select id="waistUnit"><option>in</option><option>cm</option></select>
+        </div>
+
+        <label>Neck</label>
+        <div class="input-row">
+          <input type="number" id="neck" oninput="calculateBodyFat()" />
+          <select id="neckUnit"><option>in</option><option>cm</option></select>
+        </div>
+
+        <label>Hips</label>
+        <div class="input-row">
+          <input type="number" id="hips" oninput="calculateBodyFat()" />
+          <select id="hipsUnit"><option>in</option><option>cm</option></select>
+        </div>
+
+        <label>Body Fat %</label>
+        <div class="input-row">
+          <input type="text" id="bodyFat" class="readonly-input" readonly />
+          <span style="padding: 12px; background: #2ba8b8; border-radius: 6px;">%</span>
+        </div>
+        <div id="bodyFatStatusText" class="status-text"></div>
+
+        <label>Chest</label>
+        <div class="input-row">
+          <input type="number" id="chest" />
+          <select id="chestUnit"><option>in</option><option>cm</option></select>
+        </div>
+
+        <label>Arms</label>
+        <div class="input-row">
+          <input type="number" id="arms" />
+          <select id="armsUnit"><option>in</option><option>cm</option></select>
+        </div>
+
+        <label>Thighs</label>
+        <div class="input-row">
+          <input type="number" id="thighs" />
+          <select id="thighsUnit"><option>in</option><option>cm</option></select>
+        </div>
+      </div>
+
+      <button onclick="saveMeasurements()">Save Measurements</button>
+    </div>
+
+    <div id="displayMode" class="hidden">
+      <div id="displayData"></div>
+      <button onclick="editMeasurements()">Edit</button>
+    </div>
+  </div>
+
+  <script>
+    function calculateBMI() {
+      const weight = parseFloat(document.getElementById('weight').value);
+      const height = parseFloat(document.getElementById('height').value);
+      const bmiField = document.getElementById('bmi');
+
+      if (weight > 0 && height > 0) {
+        const heightM = height / 100;
+        const bmi = weight / (heightM * heightM);
+        bmiField.value = bmi.toFixed(1);
+        showBMIStatus(bmi);
+      } else {
+        bmiField.value = '';
+        showBMIStatus(null);
+      }
+    }
+
+    function showBMIStatus(bmi) {
+      const statusText = document.getElementById('bmiStatusText');
+      if (!bmi) {
+        statusText.textContent = '';
+        return;
+      }
+
+      let status = '';
+      if (bmi < 18.5) status = 'Underweight';
+      else if (bmi < 25) status = 'Normal (Fit)';
+      else if (bmi < 30) status = 'Overweight';
+      else status = 'Obese';
+
+      statusText.textContent = `Status: ${status}`;
+    }
+
+    function calculateBodyFat() {
+      const height = parseFloat(document.getElementById('height').value);
+      const neck = parseFloat(document.getElementById('neck').value);
+      const waist = parseFloat(document.getElementById('waist').value);
+      const hips = parseFloat(document.getElementById('hips').value);
+      const bodyFatField = document.getElementById('bodyFat');
+
+      if (!height || !neck || !waist || !hips) {
+        bodyFatField.value = '';
+        showBodyFatStatus(null);
+        return;
+      }
+
+      const bodyFat = 495 / (1.29579 - 0.35004 * Math.log10(waist + hips - neck) + 0.22100 * Math.log10(height)) - 450;
+      bodyFatField.value = isFinite(bodyFat) ? bodyFat.toFixed(1) : '';
+      showBodyFatStatus(bodyFat);
+    }
+
+    function showBodyFatStatus(bodyFat) {
+      const statusText = document.getElementById('bodyFatStatusText');
+      if (!bodyFat) {
+        statusText.textContent = '';
+        return;
+      }
+
+      let status = '';
+      if (bodyFat < 18) status = 'Good';
+      else if (bodyFat < 25) status = 'Moderate';
+      else if (bodyFat < 32) status = 'High';
+      else status = 'Very High';
+
+      statusText.textContent = `Status: ${status}`;
+    }
+
+    function getBMIStatus(bmi) {
+      if (bmi < 18.5) return 'Underweight';
+      else if (bmi < 25) return 'Normal (Fit)';
+      else if (bmi < 30) return 'Overweight';
+      else return 'Obese';
+    }
+
+    function getBodyFatStatus(bodyFat) {
+      if (bodyFat < 18) return 'Good';
+      else if (bodyFat < 25) return 'Moderate';
+      else if (bodyFat < 32) return 'High';
+      else return 'Very High';
+    }
+
+    function saveMeasurements() {
+      const fields = ['weight', 'height', 'bmi', 'waist', 'neck', 'hips', 'bodyFat', 'chest', 'arms', 'thighs'];
+      const display = document.getElementById('displayData');
+      display.innerHTML = '';
+
+      fields.forEach(id => {
+        const val = document.getElementById(id).value;
+        const unit = document.getElementById(id + 'Unit')?.value || (id === 'bmi' ? 'kg/m²' : id === 'bodyFat' ? '%' : '');
+        const label = id.charAt(0).toUpperCase() + id.slice(1).replace(/([A-Z])/g, ' $1');
+
+        display.innerHTML += `<div class="display-row"><strong>${label}:</strong> <span>${val} ${unit}</span></div>`;
+
+        if (id === 'bmi' && val) {
+          const status = getBMIStatus(parseFloat(val));
+          display.innerHTML += `<div class="status-text">Status: ${status}</div>`;
+        }
+
+        if (id === 'bodyFat' && val) {
+          const status = getBodyFatStatus(parseFloat(val));
+          display.innerHTML += `<div class="status-text">Status: ${status}</div>`;
+        }
+      });
+
+      document.getElementById('formMode').classList.add('hidden');
+      document.getElementById('displayMode').classList.remove('hidden');
+    }
+
+    function editMeasurements() {
+      document.getElementById('formMode').classList.remove('hidden');
+      document.getElementById('displayMode').classList.add('hidden');
+    }
+  </script>
+
+</body>
+</html>

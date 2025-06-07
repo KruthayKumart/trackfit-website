@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kruthay Kumar Tirumala's one-year fitness transformation commitment from June 2025 to June 2026">
+  <title>Dad Bod to God Bod - Kruthay's Fitness Commitment</title>
+  <!-- Flatpickr CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <style>
+    :root {
+      --primary-color: #25a1c2;
+      --secondary-color: #2ba8b8;
+      --dark-bg: #0f1928;
+      --container-bg: #111c28;
+      --text-light: #ccc;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background-color: var(--dark-bg);
+      color: white;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      background-color: var(--container-bg);
+      padding: clamp(20px, 5vw, 40px);
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(43, 168, 184, 0.3);
+    }
+    
+    h1 {
+      text-align: center;
+      color: var(--primary-color);
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      line-height: 1.3;
+    }
+    
+    h2 {
+      color: var(--secondary-color);
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 8px;
+      margin-top: 2rem;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: var(--text-light);
+      font-style: italic;
+      margin-bottom: 2rem;
+    }
+    
+    .quote {
+      font-style: italic;
+      color: var(--secondary-color);
+      border-left: 4px solid var(--secondary-color);
+      padding-left: 20px;
+      margin: 2rem 0;
+    }
+    
+    .quote-author {
+      text-align: right;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    
+    .personal-info {
+      background-color: var(--dark-bg);
+      padding: 20px;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      border: 1px solid var(--secondary-color);
+    }
+    
+    .personal-info p {
+      margin: 0.5rem 0;
+    }
+    
+    .inspiration {
+      margin: 2rem 0;
+    }
+    
+    .rocky-quote {
+      background-color: rgba(43, 168, 184, 0.1);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    
+    .signature-section {
+      margin-top: 3rem;
+      border-top: 1px solid var(--secondary-color);
+      padding-top: 1.5rem;
+    }
+    
+    .signature-container {
+      position: relative;
+      height: 100px;
+      margin: 1.5rem 0;
+      border-bottom: 1px solid var(--secondary-color);
+    }
+    
+    #signature-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      background-color: transparent;
+    }
+    
+    .signature-label {
+      color: var(--text-light);
+      font-size: 0.9rem;
+      margin-top: 0.3rem;
+    }
+    
+    .signature-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    button {
+      background-color: var(--secondary-color);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    button:hover {
+      background-color: var(--primary-color);
+    }
+    
+    button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+    }
+    
+    #clear-signature {
+      background-color: #e74c3c;
+    }
+    
+    #clear-signature:hover {
+      background-color: #c0392b;
+    }
+    
+    .header-image {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .header-image img {
+      width: clamp(100px, 20vw, 150px);
+      height: auto;
+    }
+    
+    strong {
+      color: var(--primary-color);
+    }
+    
+    .date-section {
+      margin-top: 2rem;
+    }
+    
+    .date-input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--secondary-color);
+      color: white;
+      padding: 5px;
+      width: 150px;
+      font-family: inherit;
+    }
+    
+    .date-input::placeholder {
+      color: var(--text-light);
+      opacity: 0.7;
+    }
+    
+    .saved-signature {
+      color: var(--primary-color);
+      font-weight: bold;
+      margin-top: 10px;
+      display: none;
+    }
+    
+    /* Flatpickr customization */
+    .flatpickr-calendar {
+      background: var(--container-bg);
+      color: white;
+      box-shadow: 0 0 10px rgba(43, 168, 184, 0.5);
+    }
+    
+    .flatpickr-day {
+      color: white;
+    }
+    
+    .flatpickr-day:hover {
+      background: var(--secondary-color);
+    }
+    
+    .flatpickr-day.selected {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .flatpickr-current-month .flatpickr-monthDropdown-months {
+      background: var(--container-bg);
+      color: white;
+    }
+    
+    .flatpickr-weekday {
+      color: var(--text-light);
+    }
+    
+    .flatpickr-time input {
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-image">
+      <img src="track-fit-full-logo.png" alt="Track Fit Logo" loading="lazy">
+    </div>
+    
+    <h1>Dad Bod to God Bod</h1>
+    <div class="subtitle">A One-Year Transformation Journey</div>
+    
+    <div class="quote">
+      "Every drop of sweat is a step closer to the body you deserve. Stay consistent, stay hungry — your transformation is already in motion."
+      <div class="quote-author">— Fitness Truth</div>
+    </div>
+    
+    <h2>My Commitment</h2>
+    <div class="personal-info">
+      <p>I am <strong>Kruthay Kumar Tirumala</strong>.</p>
+      <p>At 23 years old, standing 5'10" and weighing 100 kg.</p>
+      <p>From <strong>June 2025 to June 2026</strong>, I am fully committed to transforming my body and health.</p>
+    </div>
+    
+    <p>My goal is to shed excess weight and build a fit, muscular physique that not only boosts my confidence but also leaves a lasting impression on my friends, family, and catches the attention of girls.</p>
+    
+    <div class="inspiration">
+      <p>Inspired by Bollywood actor Hrithik Roshan's incredible fitness and dedication, I am motivated to push myself every day to become stronger, healthier, and truly unforgettable. This plan marks the start of my journey to become the best version of myself.</p>
+    </div>
+    
+    <p>I draw strength from the words of Rocky Balboa:</p>
+    
+    <div class="rocky-quote">
+      "Let me tell you something you already know. The world ain't all sunshine and rainbows. It's a very mean and nasty place... and I don't care how tough you are, it will beat you to your knees and keep you there permanently if you let it.
+      <br><br>
+      You, me, or nobody is gonna hit as hard as life. But it ain't about how hard you hit — it's about how hard you can get hit and keep moving forward. How much you can take and keep moving forward. That's how winning is done!"
+    </div>
+    
+    <p>This powerful message reminds me that setbacks and challenges are inevitable, but my ability to keep pushing forward will define my success. With this mindset, I am ready to face every obstacle and commit fully to my transformation.</p>
+    
+    <div class="signature-section">
+      <h2>Sign Your Commitment</h2>
+      
+      <div class="signature-container">
+        <canvas id="signature-canvas"></canvas>
+      </div>
+      <div class="signature-label">Signature</div>
+      <div class="saved-signature" id="saved-signature-message">✓ Signature saved</div>
+      
+      <div class="signature-buttons">
+        <button id="edit-signature">Edit Signature</button>
+        <button id="save-signature">Save Signature</button>
+        <button id="clear-signature" style="display:none;">Clear Signature</button>
+      </div>
+      
+      <div class="date-section">
+        <input type="text" id="signature-date" class="date-input" placeholder="Select date" readonly>
+        <div class="signature-label">Date</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flatpickr JS -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Signature Canvas Setup
+      const canvas = document.getElementById('signature-canvas');
+      const ctx = canvas.getContext('2d');
+      let isDrawing = false;
+      let isSaved = false;
+      const editBtn = document.getElementById('edit-signature');
+      const saveBtn = document.getElementById('save-signature');
+      const clearBtn = document.getElementById('clear-signature');
+      const savedMsg = document.getElementById('saved-signature-message');
+      
+      // Set canvas size
+      function resizeCanvas() {
+        const container = canvas.parentElement;
+        canvas.width = container.offsetWidth;
+        canvas.height = container.offsetHeight;
+        
+        // Redraw saved signature if exists
+        if (localStorage.getItem('savedSignature')) {
+          const img = new Image();
+          img.onload = function() {
+            ctx.drawImage(img, 0, 0);
+            isSaved = true;
+            updateButtonStates();
+          };
+          img.src = localStorage.getItem('savedSignature');
+        }
+      }
+      
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+      
+      // Drawing functions
+      function startDrawing(e) {
+        if (!isSaved) {
+          isDrawing = true;
+          draw(e);
+        }
+      }
+      
+      function draw(e) {
+        if (!isDrawing) return;
+        
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#25a1c2';
+        
+        // Get position
+        let clientX, clientY;
+        if (e.type.includes('touch')) {
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
+        } else {
+          clientX = e.clientX;
+          clientY = e.clientY;
+        }
+        
+        const rect = canvas.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+      }
+      
+      function stopDrawing() {
+        isDrawing = false;
+        ctx.beginPath();
+      }
+      
+      // Update button states
+      function updateButtonStates() {
+        if (isSaved) {
+          editBtn.style.display = 'block';
+          saveBtn.style.display = 'none';
+          clearBtn.style.display = 'none';
+          savedMsg.style.display = 'block';
+        } else {
+          editBtn.style.display = 'none';
+          saveBtn.style.display = 'block';
+          clearBtn.style.display = 'block';
+          savedMsg.style.display = 'none';
+        }
+      }
+      
+      // Event listeners
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('touchstart', startDrawing);
+      
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('touchmove', draw);
+      
+      canvas.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('touchend', stopDrawing);
+      canvas.addEventListener('mouseout', stopDrawing);
+      
+      // Edit signature
+      editBtn.addEventListener('click', function() {
+        isSaved = false;
+        updateButtonStates();
+      });
+      
+      // Save signature
+      saveBtn.addEventListener('click', function() {
+        const signatureData = canvas.toDataURL();
+        localStorage.setItem('savedSignature', signatureData);
+        isSaved = true;
+        updateButtonStates();
+      });
+      
+      // Clear signature
+      clearBtn.addEventListener('click', function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        localStorage.removeItem('savedSignature');
+      });
+      
+      // Date picker setup
+      flatpickr("#signature-date", {
+        dateFormat: "d-m-Y",
+        defaultDate: "today",
+        static: true
+      });
+      
+      // Initialize button states
+      updateButtonStates();
+    });
+  </script>
+</body>
+</html>

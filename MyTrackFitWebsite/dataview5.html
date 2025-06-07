@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title> 💪 WHF SYNC</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111c28;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        h2 {
+            color: #2ba8b8;
+            margin-bottom: 20px;
+        }
+        .error-message {
+            color: #e03e3e;
+            font-weight: bold;
+            display: none;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        #success-message {
+            color: #03dac6;
+            font-weight: bold;
+            display: none;
+            margin: 10px auto;
+            max-width: 800px;
+            text-align: center;
+        }
+        #previousEntriesContainer {
+            margin-top: 30px;
+            border: 1px solid #2ba8b8;
+            border-radius: 6px;
+            max-width: 800px;
+            background-color: #1c2b3a;
+            padding: 16px;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+            text-align: left;
+        }
+        #previousEntriesContainer h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-weight: 700;
+            color: #2ba8b8;
+            text-align: center;
+        }
+        #entriesList {
+            list-style-type: decimal !important;
+            list-style-position: inside !important;
+            padding-left: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 0;
+            color: #fff;
+            font-weight: 600;
+        }
+        #entriesList li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 1px solid #2ba8b8;
+            cursor: pointer;
+            user-select: none;
+        }
+        #entriesList li:last-child {
+            border-bottom: none;
+        }
+        #entriesList li:hover {
+            background-color: #2ba8b8;
+            color: #111c28;
+        }
+        .delete-entry-btn {
+            background: transparent;
+            border: none;
+            color: #e03e3e;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            user-select: none;
+            transition: color 0.3s;
+        }
+        .delete-entry-btn:hover {
+            color: #b62b2b;
+        }
+        button {
+            margin-right: 8px;
+            margin-top: 10px;
+            background: #2ba8b8;
+            border: none;
+            color: #111c28;
+            font-weight: bold;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background: #1a7280;
+            color: white;
+        }
+        button.clear-btn, button.reset-btn {
+            background: #e03e3e;
+            color: #fff;
+        }
+        button.clear-btn:hover, button.reset-btn:hover {
+            background: #b62b2b;
+        }
+        input, select {
+            padding: 6px 8px;
+            border-radius: 5px;
+            border: 1px solid #2ba8b8;
+            background: #1c2b3a;
+            color: #fff;
+            font-weight: 600;
+            width: 110px;
+        }
+        input[type="number"] {
+            width: 120px;
+        }
+        label {
+            display: inline-block;
+            width: 70px;
+            text-align: right;
+            margin-right: 10px;
+            color: #2ba8b8;
+        }
+        #bodyFatChart {
+            background: #1c2b3a;
+            margin: 30px auto;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 100%;
+            height: 400px;
+        }
+        #inputContainer {
+            margin: 0 auto 20px auto;
+            max-width: 800px;
+            text-align: left;
+        }
+        #buttonsContainer {
+            margin: 10px auto 0 auto;
+            max-width: 800px;
+            text-align: center;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .input-group input, .input-group select {
+            margin-right: 10px;
+        }
+        .date-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .height-inputs {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        #height-feet-inches {
+            display: flex;
+            gap: 10px;
+        }
+        #height-single {
+            display: none;
+        }
+        #body-fat {
+            background: #1c2b3a;
+            cursor: not-allowed;
+            border: 1px solid #2ba8b8;
+            width: 150px;
+        }
+        .category-result {
+            color: #2ba8b8;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1000px;
+      margin: 40px auto;
+    }
+    .nav-buttons a {
+      background-color: #2ba8b8;
+      color: #0f1928;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .nav-buttons a:hover {
+      background-color: #1d7c88;
+    }
+    </style>
+</head>
+<body>
+    <h2>💪 WHF(Waist-Hips-Fat%) Sync</h2>
+    <div id="success-message" aria-live="polite"></div>
+    <div id="inputContainer">
+        <div class="input-group">
+            <div class="date-group">
+                <label for="monthSelect">Month:</label>
+                <select id="monthSelect"></select>
+                <label for="yearSelect">Year:</label>
+                <select id="yearSelect"></select>
+            </div>
+            <span id="date-error" class="error-message"></span>
+        </div>
+        <div class="input-group">
+            <label for="sex">Sex:</label>
+            <select id="sex">
+                <option value="">Select</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+            <span id="sex-error" class="error-message">Please select a sex.</span>
+        </div>
+        <div class="input-group">
+            <label for="age">Age:</label>
+            <input type="number" id="age" min="1" placeholder="Enter age (years)" aria-describedby="age-error">
+            <span id="age-error" class="error-message">Age must be positive.</span>
+        </div>
+        <div class="input-group">
+            <label for="height">Height:</label>
+            <div class="height-inputs">
+                <div id="height-single">
+                    <input type="number" id="height-value" min="0" placeholder="Enter height" aria-describedby="height-error">
+                </div>
+                <div id="height-feet-inches">
+                    <input type="number" id="height-feet" min="0" placeholder="Feet" aria-describedby="height-error">
+                    <input type="number" id="height-inches" min="0" placeholder="Inches" aria-describedby="height-error">
+                </div>
+                <select id="height-unit-toggle">
+                    <option value="ft">Feet/Inches</option>
+                    <option value="cm">Centimeters</option>
+                    <option value="m">Meters</option>
+                </select>
+            </div>
+            <span id="height-error" class="error-message">Height must be positive.</span>
+        </div>
+        <div class="input-group">
+            <label for="neck">Neck:</label>
+            <input type="number" id="neck" min="0" placeholder="Enter neck" aria-describedby="neck-error">
+            <select id="neck-unit">
+                <option value="cm">cm</option>
+                <option value="in">in</option>
+            </select>
+            <span id="neck-error" class="error-message">Neck measurement must be positive.</span>
+        </div>
+        <div class="input-group">
+            <label for="hip">Hip:</label>
+            <input type="number" id="hip" min="0" placeholder="Enter hip" aria-describedby="hip-error">
+            <select id="hip-unit">
+                <option value="cm">cm</option>
+                <option value="in">in</option>
+            </select>
+            <span id="hip-error" class="error-message">Hip measurement must be positive.</span>
+        </div>
+        <div class="input-group">
+            <label for="waist">Waist:</label>
+            <input type="number" id="waist" min="0" placeholder="Enter waist" aria-describedby="waist-error">
+            <select id="waist-unit">
+                <option value="cm">cm</option>
+                <option value="in">in</option>
+            </select>
+            <span id="waist-error" class="error-message">Waist measurement must be positive.</span>
+        </div>
+        <div class="input-group">
+            <label for="body-fat">Body Fat:</label>
+            <input type="text" id="body-fat" readonly placeholder="Body fat (%)" aria-describedby="body-fat-error category-result">
+            <span id="body-fat-error" class="error-message"></span>
+            <span id="category-result" class="category-result"></span>
+        </div>
+    </div>
+    <div id="buttonsContainer">
+        <button id="updateBtn">📈 Update Chart</button>
+        <button id="clearBtn" class="clear-btn">🧽 Clear</button>
+        <button id="resetZoomBtn">🔍 Reset Zoom</button>
+        <button id="toggleEntriesBtn">✏️ Edit Previous Entries</button>
+        <button id="resetBtn" class="reset-btn">🔄 Reset</button>
+    </div>
+    <canvas id="bodyFatChart"></canvas>
+    <div id="previousEntriesContainer">
+        <h3>📝 Previous Entered Values</h3>
+        <ul id="entriesList"></ul>
+    </div>
+    <script>
+        const monthSelect = document.getElementById('monthSelect');
+        const yearSelect = document.getElementById('yearSelect');
+        const sex = document.getElementById('sex');
+        const age = document.getElementById('age');
+        const heightValue = document.getElementById('height-value');
+        const heightFeet = document.getElementById('height-feet');
+        const heightInches = document.getElementById('height-inches');
+        const heightUnitToggle = document.getElementById('height-unit-toggle');
+        const neck = document.getElementById('neck');
+        const neckUnit = document.getElementById('neck-unit');
+        const hip = document.getElementById('hip');
+        const hipUnit = document.getElementById('hip-unit');
+        const waist = document.getElementById('waist');
+        const waistUnit = document.getElementById('waist-unit');
+        const bodyFat = document.getElementById('body-fat');
+        const categoryResult = document.getElementById('category-result');
+        const successMessage = document.getElementById('success-message');
+        const updateBtn = document.getElementById('updateBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const toggleEntriesBtn = document.getElementById('toggleEntriesBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const resetZoomBtn = document.getElementById('resetZoomBtn');
+        const previousEntriesContainer = document.getElementById('previousEntriesContainer');
+        const entriesList = document.getElementById('entriesList');
+        const inputContainer = document.getElementById('inputContainer');
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth();
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        // Populate month and year dropdowns
+        monthNames.forEach((m, i) => {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = m;
+            monthSelect.appendChild(option);
+        });
+        for (let y = 2000; y <= 2100; y++) {
+            const option = document.createElement('option');
+            option.value = y;
+            option.textContent = y;
+            yearSelect.appendChild(option);
+        }
+
+        function resetInputsToDefault() {
+            monthSelect.value = currentMonth;
+            yearSelect.value = currentYear;
+            sex.value = '';
+            age.value = '';
+            heightValue.value = '';
+            heightFeet.value = '';
+            heightInches.value = '';
+            heightUnitToggle.value = 'ft';
+            neck.value = '';
+            neckUnit.value = 'cm';
+            hip.value = '';
+            hipUnit.value = 'cm';
+            waist.value = '';
+            waistUnit.value = 'cm';
+            bodyFat.value = '';
+            categoryResult.innerText = '';
+            successMessage.style.display = 'none';
+            document.querySelectorAll('.error-message').forEach(span => {
+                span.style.display = 'none';
+                span.innerText = '';
+            });
+        }
+
+        resetInputsToDefault();
+
+        let bodyFatData = JSON.parse(localStorage.getItem('bodyFatData')) || {};
+
+        const ctx = document.getElementById('bodyFatChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Waist (cm)',
+                        data: [],
+                        backgroundColor: '#2ba8b8',
+                        borderColor: '#1a7280',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Hip (cm)',
+                        data: [],
+                        backgroundColor: '#03dac6',
+                        borderColor: '#00b7a8',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Body Fat (%)',
+                        data: [],
+                        backgroundColor: '#e03e3e',
+                        borderColor: '#b62b2b',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'nearest', intersect: false },
+                plugins: {
+                    legend: { labels: { color: '#2ba8b8', font: { size: 16, weight: 'bold' } } },
+                    tooltip: {
+                        callbacks: {
+                            title: ctx => {
+                                const date = new Date(ctx[0].label);
+                                return date.toLocaleString('default', { month: 'short', year: 'numeric' });
+                            },
+                            label: ctx => `${ctx.dataset.label}: ${ctx.raw}`
+                        }
+                    },
+                    zoom: {
+                        zoom: {
+                            wheel: { enabled: true },
+                            pinch: { enabled: true },
+                            mode: 'x',
+                        },
+                        pan: {
+                            enabled: true,
+                            mode: 'x',
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: { unit: 'month', displayFormats: { month: 'MMM yyyy' } },
+                        ticks: { color: '#2ba8b8', font: { weight: 'bold' } },
+                        grid: {
+                            color: '#1a2c3f',
+                            borderColor: '#2ba8b8',
+                            drawTicks: true,
+                            drawOnChartArea: true,
+                            drawBorder: true,
+                            tickLength: 10,
+                            lineWidth: 1
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#2ba8b8', font: { weight: 'bold' } },
+                        grid: {
+                            color: '#1a2c3f',
+                            borderColor: '#2ba8b8',
+                            drawTicks: true,
+                            drawOnChartArea: true,
+                            drawBorder: true,
+                            lineWidth: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        function convertValue(value, fromUnit, toUnit, isHeight = false) {
+            if (value === '' || value === null || value === undefined) {
+                return isHeight && toUnit === 'ft' ? '0:0' : 0;
+            }
+            let numericValue = parseFloat(value);
+            if (isNaN(numericValue)) {
+                return isHeight && toUnit === 'ft' ? '0:0' : 0;
+            }
+            if (isHeight) {
+                if (fromUnit === 'ft') {
+                    const parts = String(value).split(':');
+                    const feet = parseFloat(parts[0]) || 0;
+                    const inches = parseFloat(parts[1]) || 0;
+                    const totalInches = (feet * 12) + inches;
+                    if (toUnit === 'cm') return (totalInches * 2.54).toFixed(1);
+                    if (toUnit === 'm') return (totalInches * 0.0254).toFixed(1);
+                    return `${feet}:${inches}`;
+                } else if (fromUnit === 'cm') {
+                    if (toUnit === 'ft') {
+                        const totalInches = numericValue / 2.54;
+                        const feet = Math.floor(totalInches / 12);
+                        const inches = Math.round(totalInches % 12);
+                        return `${feet}:${inches}`;
+                    }
+                    if (toUnit === 'm') return (numericValue / 100).toFixed(1);
+                    return numericValue.toFixed(1);
+                } else if (fromUnit === 'm') {
+                    if (toUnit === 'cm') return (numericValue * 100).toFixed(1);
+                    if (toUnit === 'ft') {
+                        const totalInches = numericValue * 39.3701;
+                        const feet = Math.floor(totalInches / 12);
+                        const inches = Math.round(totalInches % 12);
+                        return `${feet}:${inches}`;
+                    }
+                    return numericValue.toFixed(1);
+                }
+            } else {
+                let cmValue = fromUnit === 'cm' ? numericValue : fromUnit === 'in' ? (numericValue * 2.54) : numericValue;
+                if (fromUnit === 'cm' && toUnit === 'in') return (cmValue / 2.54).toFixed(1);
+                if (fromUnit === 'in' && toUnit === 'cm') return cmValue.toFixed(1);
+                return cmValue.toFixed(1);
+            }
+        }
+
+        function showError(id, message) {
+            const errorSpan = document.getElementById(`${id}-error`);
+            if (errorSpan) {
+                errorSpan.innerText = message;
+                errorSpan.style.display = message ? 'inline' : 'none';
+            }
+        }
+
+        function showSuccess(message) {
+            successMessage.innerText = message;
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(span => {
+                span.innerText = '';
+                span.style.display = 'none';
+            });
+        }
+
+        function calculateBodyFat() {
+            clearErrors();
+
+            if (!neck || !neckUnit || !hip || !hipUnit || !waist || !waistUnit) {
+                showError('body-fat', 'Input fields are missing.');
+                return null;
+            }
+
+            const sexValue = sex.value;
+            const ageValue = parseInt(age.value);
+            const heightUnit = heightUnitToggle.value;
+            let heightCm;
+            if (heightUnit === 'ft') {
+                const feet = parseFloat(heightFeet.value) || 0;
+                const inches = parseFloat(heightInches.value) || 0;
+                if (feet <= 0 && inches <= 0) {
+                    showError('height', 'Height must be positive.');
+                    return null;
+                }
+                heightCm = parseFloat(convertValue(`${feet}:${inches}`, 'ft', 'cm', true)) || 0;
+            } else {
+                const height = parseFloat(heightValue.value) || 0;
+                if (height <= 0) {
+                    showError('height', 'Height must be positive.');
+                    return null;
+                }
+                heightCm = parseFloat(convertValue(height, heightUnit, 'cm', true)) || 0;
+            }
+
+            const neckValue = parseFloat(neck.value) || 0;
+            const neckUnitValue = neckUnit.value;
+            let neckCm;
+            try {
+                neckCm = parseFloat(convertValue(neckValue, neckUnitValue, 'cm')) || 0;
+            } catch (e) {
+                showError('neck', 'Invalid neck measurement.');
+                return null;
+            }
+
+            const hipValue = parseFloat(hip.value) || 0;
+            const hipUnitValue = hipUnit.value;
+            const hipCm = parseFloat(convertValue(hipValue, hipUnitValue, 'cm')) || 0;
+            const waistValue = parseFloat(waist.value) || 0;
+            const waistUnitValue = waistUnit.value;
+            const waistCm = parseFloat(convertValue(waistValue, waistUnitValue, 'cm')) || 0;
+
+            if (!sexValue) {
+                showError('sex', 'Please select a sex.');
+                return null;
+            }
+            if (isNaN(ageValue) || ageValue <= 0) {
+                showError('age', 'Age must be positive.');
+                return null;
+            }
+            if (heightCm <= 0) {
+                showError('height', 'Height must be positive.');
+                return null;
+            }
+            if (neckCm <= 0) {
+                showError('neck', 'Neck measurement must be positive.');
+                return null;
+            }
+            if (hipCm <= 0) {
+                showError('hip', 'Hip measurement must be positive.');
+                return null;
+            }
+            if (waistCm <= 0) {
+                showError('waist', 'Waist measurement must be positive.');
+                return null;
+            }
+
+            let bodyFatPercent;
+            if (sexValue === 'male') {
+                const diff = waistCm - neckCm;
+                if (diff <= 0) {
+                    showError('waist', 'Waist must be greater than neck for males.');
+                    return null;
+                }
+                bodyFatPercent = 86.010 * Math.log10(diff) - 70.041 * Math.log10(heightCm) + 36.76;
+            } else {
+                const sumDiff = waistCm + hipCm - neckCm;
+                if (sumDiff <= 0) {
+                    showError('waist', 'Waist + hip must be greater than neck for females.');
+                    return null;
+                }
+                bodyFatPercent = 163.205 * Math.log10(sumDiff) - 97.684 * Math.log10(heightCm) - 78.387;
+            }
+
+            bodyFatPercent = Math.round(bodyFatPercent * 10) / 10;
+            if (isNaN(bodyFatPercent) || bodyFatPercent < 0 || bodyFatPercent > 100) {
+                showError('body-fat', 'Invalid inputs for body fat calculation.');
+                return null;
+            }
+
+            bodyFat.value = `${bodyFatPercent}%`;
+            categoryResult.innerText = getStatus(bodyFatPercent, sexValue);
+            return { waistCm, hipCm, bodyFatPercent, sex: sexValue, age: ageValue, heightCm };
+        }
+
+        function getStatus(percent, sex) {
+            if (sex === 'male') {
+                if (percent < 6) return "Essential fat";
+                if (percent < 14) return "Athletes";
+                if (percent < 18) return "Fitness";
+                if (percent < 25) return "Average";
+                return "Obese";
+            } else {
+                if (percent < 14) return "Essential fat";
+                if (percent < 21) return "Athletes";
+                if (percent < 25) return "Fitness";
+                if (percent < 32) return "Average";
+                return "Obese";
+            }
+        }
+
+        function getChartData() {
+            const labels = [];
+            const waistData = [];
+            const hipData = [];
+            const bodyFatPercentages = [];
+            
+            // Sort keys chronologically
+            const keysSorted = Object.keys(bodyFatData).sort((a, b) => {
+                const [yearA, monthA] = a.split('-').map(Number);
+                const [yearB, monthB] = b.split('-').map(Number);
+                return new Date(yearA, monthA) - new Date(yearB, monthB);
+            });
+            
+            keysSorted.forEach(key => {
+                const [year, month] = key.split('-').map(Number);
+                labels.push(new Date(year, month, 1).toISOString());
+                
+                const data = bodyFatData[key];
+                waistData.push(data.waist);
+                hipData.push(data.hip);
+                bodyFatPercentages.push(data.bodyFat);
+            });
+            
+            return { 
+                labels, 
+                waistData, 
+                hipData, 
+                bodyFatPercentages 
+            };
+        }
+
+        function renderChart() {
+            const { labels, waistData, hipData, bodyFatPercentages } = getChartData();
+            
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = waistData;
+            chart.data.datasets[1].data = hipData;
+            chart.data.datasets[2].data = bodyFatPercentages;
+            
+            chart.update();
+        }
+
+        function saveData() {
+            localStorage.setItem('bodyFatData', JSON.stringify(bodyFatData));
+        }
+
+        function updateEntriesList() {
+            entriesList.innerHTML = '';
+            const keysSorted = Object.keys(bodyFatData).sort((a, b) => {
+                const [yearA, monthA] = a.split('-').map(Number);
+                const [yearB, monthB] = b.split('-').map(Number);
+                return new Date(yearB, monthB) - new Date(yearA, monthA);
+            });
+            
+            if (keysSorted.length === 0) {
+                previousEntriesContainer.style.display = 'none';
+                toggleEntriesBtn.textContent = "✏️ Edit Previous Entries";
+                return;
+            }
+            
+            previousEntriesContainer.style.display = 'block';
+            keysSorted.forEach((key) => {
+                const li = document.createElement('li');
+                const [year, month] = key.split('-').map(Number);
+                const data = bodyFatData[key];
+                const dateText = `${monthNames[month]} ${year} — Waist: ${data.waist.toFixed(1)} cm, Hip: ${data.hip.toFixed(1)} cm, Body Fat: ${data.bodyFat}%`;
+                li.textContent = dateText;
+                li.title = "Click to edit this entry";
+                li.addEventListener('click', () => {
+                    monthSelect.value = month;
+                    yearSelect.value = year;
+                    sex.value = data.sex || '';
+                    age.value = data.age || '';
+                    heightUnitToggle.value = data.heightUnit || 'ft';
+                    if (data.heightUnit === 'ft') {
+                        const ftInchesString = convertValue(data.heightCm, 'cm', 'ft', true);
+                        const [feet, inches] = ftInchesString.split(':');
+                        heightFeet.value = feet;
+                        heightInches.value = inches;
+                        heightValue.value = '';
+                    } else {
+                        heightValue.value = convertValue(data.heightCm, 'cm', data.heightUnit, true);
+                        heightFeet.value = '';
+                        heightInches.value = '';
+                    }
+                    heightUnitToggle.dispatchEvent(new Event('change'));
+                    neckUnit.value = data.neckUnit || 'cm';
+                    neck.value = convertValue(data.neck, 'cm', neckUnit.value);
+                    neckUnit.dispatchEvent(new Event('change'));
+                    waistUnit.value = data.waistUnit || 'cm';
+                    waist.value = convertValue(data.waist, 'cm', waistUnit.value);
+                    waistUnit.dispatchEvent(new Event('change'));
+                    hipUnit.value = data.hipUnit || 'cm';
+                    hip.value = convertValue(data.hip, 'cm', hipUnit.value);
+                    hipUnit.dispatchEvent(new Event('change'));
+                    calculateBodyFat();
+                    inputContainer.scrollIntoView({ behavior: 'smooth' });
+                });
+                const delBtn = document.createElement('button');
+                delBtn.textContent = '❌';
+                delBtn.classList.add('delete-entry-btn');
+                delBtn.title = `Delete entry for ${monthNames[month]} ${year}`;
+                delBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (confirm(`Delete entry for ${monthNames[month]} ${year}?`)) {
+                        delete bodyFatData[key];
+                        saveData();
+                        updateEntriesList();
+                        renderChart();
+                    }
+                });
+                li.appendChild(delBtn);
+                entriesList.appendChild(li);
+            });
+        }
+
+        function addBodyFatData() {
+            try {
+                const month = parseInt(monthSelect.value);
+                const year = parseInt(yearSelect.value);
+                if (isNaN(month) || isNaN(year)) {
+                    showError('date', 'Please select a valid month and year.');
+                    return;
+                }
+                
+                const key = `${year}-${String(month).padStart(2, '0')}`;
+                
+                if (bodyFatData[key] && !confirm(`Data for ${monthNames[month]} ${year} exists. Overwrite?`)) {
+                    return;
+                }
+                
+                const result = calculateBodyFat();
+                if (!result) {
+                    showError('body-fat', 'Please correct input errors before updating.');
+                    return;
+                }
+                
+                const { waistCm, hipCm, bodyFatPercent, sex, age, heightCm } = result;
+                
+                bodyFatData[key] = {
+                    waist: waistCm,
+                    hip: hipCm,
+                    bodyFat: bodyFatPercent,
+                    sex: sex,
+                    age: age,
+                    heightUnit: heightUnitToggle.value,
+                    heightCm: heightCm,
+                    neck: parseFloat(convertValue(neck.value, neckUnit.value, 'cm')),
+                    neckUnit: neckUnit.value,
+                    waistUnit: waistUnit.value,
+                    hipUnit: hipUnit.value
+                };
+                
+                saveData();
+                renderChart();
+                updateEntriesList();
+                showSuccess(`Data added for ${monthNames[month]} ${year}!`);
+                resetInputsToDefault();
+            } catch (e) {
+                console.error('Error in addBodyFatData:', e);
+                showError('body-fat', 'An error occurred. Please try again.');
+            }
+        }
+
+        function clearInputsOnly() {
+            resetInputsToDefault();
+        }
+
+        function resetAllData() {
+            if (confirm("Are you sure you want to reset all saved data? This cannot be undone.")) {
+                bodyFatData = {};
+                saveData();
+                chart.data.labels = [];
+                chart.data.datasets.forEach(dataset => dataset.data = []);
+                chart.update();
+                updateEntriesList();
+                resetInputsToDefault();
+                previousEntriesContainer.style.display = 'none';
+                toggleEntriesBtn.textContent = "✏️ Edit Previous Entries";
+            }
+        }
+
+        function resetBodyFatZoom() {
+            chart.resetZoom();
+        }
+
+        function toggleEntriesVisibility() {
+            if (previousEntriesContainer.style.display === 'block') {
+                previousEntriesContainer.style.display = 'none';
+                toggleEntriesBtn.textContent = "✏️ Edit Previous Entries";
+            } else {
+                updateEntriesList();
+                previousEntriesContainer.style.display = 'block';
+                toggleEntriesBtn.textContent = "⬇️ Hide Previous Entries";
+                previousEntriesContainer.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+
+        heightUnitToggle.addEventListener('change', function () {
+            const unit = this.value;
+            const single = document.getElementById('height-single');
+            const pair = document.getElementById('height-feet-inches');
+            const previousUnit = this.dataset.previousUnit || 'ft';
+            let currentValueForConversion;
+            if (previousUnit === 'ft') {
+                const feet = parseFloat(heightFeet.value) || 0;
+                const inches = parseFloat(heightInches.value) || 0;
+                currentValueForConversion = `${feet}:${inches}`;
+            } else {
+                currentValueForConversion = parseFloat(heightValue.value);
+            }
+            if (unit === 'ft') {
+                single.style.display = 'none';
+                pair.style.display = 'flex';
+                if (!isNaN(currentValueForConversion) || (previousUnit === 'ft' && currentValueForConversion !== '')) {
+                    const converted = convertValue(currentValueForConversion, previousUnit, 'ft', true);
+                    const [feet, inches] = converted.split(':').map(parseFloat);
+                    heightFeet.value = feet || '';
+                    heightInches.value = inches || '';
+                } else {
+                    heightFeet.value = '';
+                    heightInches.value = '';
+                }
+                heightValue.value = '';
+            } else {
+                single.style.display = 'block';
+                pair.style.display = 'none';
+                heightValue.placeholder = `Enter height (${unit})`;
+                if (!isNaN(currentValueForConversion) || (previousUnit === 'ft' && currentValueForConversion !== '')) {
+                    const converted = convertValue(currentValueForConversion, previousUnit, unit, true);
+                    heightValue.value = converted !== '' ? parseFloat(converted).toFixed(1) : '';
+                } else {
+                    heightValue.value = '';
+                }
+                heightFeet.value = '';
+                heightInches.value = '';
+            }
+            this.dataset.previousUnit = unit;
+            if (heightValue.value || heightFeet.value || heightInches.value) {
+                calculateBodyFat();
+            }
+        });
+
+        function setupUnitConversion(inputId, unitId) {
+            const input = document.getElementById(inputId);
+            const unitSelect = document.getElementById(unitId);
+            if (!input || !unitSelect) return;
+            unitSelect.dataset.previousUnit = unitSelect.value;
+            unitSelect.dataset.originalCmValue = '';
+            unitSelect.addEventListener('change', function () {
+                const newUnit = this.value;
+                const previousUnit = this.dataset.previousUnit || 'cm';
+                let currentValue = parseFloat(input.value);
+                if (!isNaN(currentValue) && input.value !== '') {
+                    if (previousUnit === 'cm') {
+                        this.dataset.originalCmValue = currentValue.toFixed(1);
+                    }
+                    if (newUnit === 'cm' && this.dataset.originalCmValue !== '') {
+                        input.value = parseFloat(this.dataset.originalCmValue).toFixed(1);
+                    } else {
+                        input.value = parseFloat(convertValue(currentValue, previousUnit, newUnit)).toFixed(1);
+                        if (newUnit === 'cm') {
+                            this.dataset.originalCmValue = input.value;
+                        }
+                    }
+                } else {
+                    input.value = '';
+                    this.dataset.originalCmValue = '';
+                }
+                this.dataset.previousUnit = newUnit;
+                if (input.value) {
+                    calculateBodyFat();
+                }
+            });
+        }
+
+        ['neck', 'hip', 'waist'].forEach(id => {
+            setupUnitConversion(id, id + '-unit');
+        });
+
+        function setupInputEvents() {
+            [
+                monthSelect, yearSelect, sex, age,
+                heightValue, heightFeet, heightInches,
+                neck, hip, waist
+            ].forEach(element => {
+                if (element) {
+                    element.addEventListener('input', () => {
+                        if (element.value) {
+                            calculateBodyFat();
+                        } else {
+                            clearErrors();
+                            bodyFat.value = '';
+                            categoryResult.innerText = '';
+                        }
+                    });
+                }
+            });
+        }
+
+        updateBtn.addEventListener('click', addBodyFatData);
+        clearBtn.addEventListener('click', clearInputsOnly);
+        toggleEntriesBtn.addEventListener('click', toggleEntriesVisibility);
+        resetBtn.addEventListener('click', resetAllData);
+        resetZoomBtn.addEventListener('click', resetBodyFatZoom);
+
+        // Initialize
+        renderChart();
+        updateEntriesList();
+        heightUnitToggle.dispatchEvent(new Event('change'));
+        setupInputEvents();
+    </script>
+    <div class="nav-buttons">
+    <a href="dataview3.html">← Step Log</a>
+    <a href="dataview6.html">Calorie plit Duo →</a>
+  </div>
+</body>
+</html>
