@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Prevent caching to ensure fresh load -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Track Fit</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f1928;
+      color: white;
+      scroll-behavior: smooth;
+    }
+
+    .profile-container {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 2000;
+    }
+
+    .profile-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #25a1c2;
+      background-color: white;
+      padding: 2px;
+      transition: transform 0.3s ease;
+    }
+
+    .profile-icon:hover {
+      transform: scale(1.1);
+    }
+
+    .profile-menu {
+      display: none;
+      position: absolute;
+      top: 45px;
+      right: 0;
+      background-color: #0f1928;
+      border: 1px solid #25a1c2;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      min-width: 180px;
+      z-index: 2000;
+    }
+
+    .profile-menu a {
+      display: block;
+      padding: 10px 15px;
+      color: white;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: background-color 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .profile-menu a:hover {
+      background-color: #25a1c2;
+    }
+
+    .profile-menu-dropdown {
+      position: relative;
+    }
+
+    .profile-menu-dropdown-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      color: white;
+      text-decoration: none;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .profile-menu-dropdown-toggle:hover {
+      background-color: #25a1c2;
+    }
+
+    .profile-menu-dropdown-content {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: -100%;
+      background-color: #0f1928;
+      border: 1px solid #25a1c2;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      min-width: 160px;
+      z-index: 2001;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+
+    .profile-menu-dropdown.active .profile-menu-dropdown-content,
+    .profile-menu-dropdown:hover .profile-menu-dropdown-content {
+      display: block;
+      opacity: 1;
+      visibility: visible;
+      transition-delay: 0s;
+    }
+
+    .profile-menu-dropdown-content a {
+      display: block;
+      padding: 8px 15px;
+      color: white;
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: background-color 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .profile-menu-dropdown-content a:hover {
+      background-color: #1a6d83;
+    }
+
+    .profile-menu-dropdown-content a[href^="http"]::after {
+      content: '↗';
+      display: inline-block;
+      margin-left: 5px;
+      font-size: 0.8rem;
+      color: #25a1c2;
+    }
+
+    .dropdown-arrow {
+      font-size: 0.6rem;
+      transition: transform 0.3s ease;
+      margin-left: 5px;
+      display: inline-block;
+      color: #25a1c2;
+    }
+
+    .profile-menu-dropdown.active .dropdown-arrow,
+    .profile-menu-dropdown:hover .dropdown-arrow {
+      transform: rotate(90deg);
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding-top: 70px;
+    }
+
+    .logo-link {
+      margin: 20px 0;
+      display: inline-block;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .logo-link:hover {
+      transform: scale(1.1);
+    }
+
+    .logo {
+      height: 150px; /* Increased logo size */
+    }
+
+    .menu {
+      background-color: #0f1928;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px 0;
+      border-top: 1px solid #25a1c2;
+      border-bottom: 1px solid #25a1c2;
+      position: relative;
+      z-index: 1000;
+    }
+
+    .menu a {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 1rem;
+      padding: 6px 10px;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+
+    .menu a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background-color: #25a1c2;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .menu a:hover {
+      color: #25a1c2;
+    }
+
+    .menu a:hover::after {
+      width: 100%;
+    }
+
+    .menu-item {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 1rem;
+      padding: 6px 10px;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+
+    .menu-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background-color: #25a1c2;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .menu-item:hover {
+      color: #25a1c2;
+    }
+
+    .menu-item:hover::after {
+      width: 100%;
+    }
+
+    .menu .dropdown {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      padding-bottom: 5px;
+    }
+
+    .menu .dropdown-toggle {
+      cursor: pointer;
+      position: relative;
+      padding-right: 20px;
+    }
+
+    .menu .dropdown-toggle::after {
+      content: '▼';
+      position: absolute;
+      right: 5px;
+      font-size: 0.7rem;
+      color: #25a1c2;
+      transition: transform 0.3s ease;
+    }
+
+    .menu .dropdown.active .dropdown-toggle::after,
+    .menu .dropdown:hover .dropdown-toggle::after {
+      transform: rotate(180deg);
+    }
+
+    .menu .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 5px);
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #0f1928;
+      border: 1px solid #25a1c2;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      min-width: 160px;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+
+    .menu .dropdown:hover .dropdown-menu,
+    .menu .dropdown.active .dropdown-menu,
+    .menu .dropdown-menu:hover {
+      display: block;
+      opacity: 1;
+      visibility: visible;
+      transition-delay: 0s;
+    }
+
+    .menu .dropdown:not(:hover):not(.active) .dropdown-menu {
+      transition-delay: 0.3s;
+    }
+
+    .menu .dropdown-menu a {
+      display: block;
+      padding: 10px 12px;
+      color: white;
+      text-decoration: none;
+      font-size: 0.9rem;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+
+    .menu .dropdown-menu a:hover {
+      background-color: #25a1c2;
+    }
+
+    .quote-section {
+      background-image: url('workout image.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 100px 20px;
+      color: white;
+    }
+
+    .quote {
+      max-width: 800px;
+      text-align: right;
+      font-size: 1.5rem;
+      font-weight: bold;
+      transition: transform 0.3s ease;
+      color: #ffffff;
+    }
+
+    .quote:hover {
+      transform: scale(1.2);
+    }
+
+    .author {
+      font-size: 14px;
+      font-style: italic;
+      margin-top: 10px;
+      opacity: 0.85;
+      color: #ffffff;
+    }
+
+    .phases {
+      padding: 60px 20px;
+      background-color: #0f1928;
+    }
+
+    .phases-title {
+      font-size: 28px;
+      color: #25a1c2;
+      margin-bottom: 20px;
+      text-align: left;
+      padding-left: 40px;
+      display: inline-block;
+      position: relative;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .phases-title::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      height: 2px;
+      width: 0;
+      background-color: #25a1c2;
+      transition: width 0.3s ease-in;
+    }
+
+    .phases-title:hover::after {
+      width: 100%;
+    }
+
+    .phases-description {
+      max-width: 800px;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #ffffff;
+      padding: 0 20px;
+      margin-bottom: 30px;
+    }
+
+    .phase-list {
+      list-style: none;
+      padding-left: 40px;
+      max-width: 800px;
+    }
+
+    .phase-list li {
+      margin: 15px 0;
+      font-size: 1.1rem;
+    }
+
+    .phase-list a {
+      color: #25a1c2;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .phase-list a:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    .phase-description {
+      color: #ffffff;
+      margin-top: 5px;
+      margin-left: 10px;
+      font-size: 0.95rem;
+    }
+
+    table {
+      width: 90%;
+      max-width: 800px;
+      border-collapse: collapse;
+      margin-top: 30px;
+      color: white;
+    }
+
+    th, td {
+      border: 1px solid #25a1c2;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #25a1c2;
+      color: #0f1928;
+    }
+
+    .schedule {
+      padding: 60px 20px;
+      background-color: #0f1928;
+    }
+
+    .schedule-title {
+      font-size: 2rem;
+      color: #25a1c2;
+      margin-bottom: 20px;
+      text-align: left;
+      padding-left: 20px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .schedule-title::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      height: 2px;
+      width: 0;
+      background-color: #25a1c2;
+      transition: width 0.3s ease;
+    }
+
+    .schedule-title:hover::after {
+      width: 100vw;
+    }
+
+    input, select {
+      background-color: #111c28;
+      border: 1px solid #2ba8b8;
+      color: white;
+    }
+
+    label {
+      color: #25a1c2;
+    }
+
+    .section-heading {
+      color: #25a1c2;
+      text-decoration: none;
+      font-size: 1.5rem;
+      padding: 6px 10px;
+      position: relative;
+      transition: color 0.3s ease;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+
+    .section-heading::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background-color: #25a1c2;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .section-heading:hover {
+      color: #25a1c2;
+    }
+
+    .section-heading:hover::after {
+      width: 100%;
+    }
+
+    .reset-button {
+      background-color: #25a1c2;
+      color: #0f1928;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .reset-button:hover {
+      background-color: #1b8299;
+    }
+
+    #phase1, #phase2, #phase3, #phase4 {
+      color: #25a1c2;
+    }
+
+    /* Scroll to top button styles */
+    .scroll-to-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      background-color: #25a1c2;
+      color: #0f1928;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease, background-color 0.3s ease;
+      z-index: 2000;
+    }
+
+    .scroll-to-top:hover {
+      background-color: #1b8299;
+    }
+
+    .scroll-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .scroll-to-top::before {
+      content: '↑';
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body onload="window.scrollTo(0, 0);">
+  <div class="profile-container">
+    <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Profile" class="profile-icon" onclick="toggleProfileMenu()" />
+    <div id="profileMenu" class="profile-menu">
+      <a href="my-commitment.html">My Commitment</a>
+      <a href="my-profile.html">My Profile</a>
+      <a href="my-measurements.html">My Measurements</a>
+      <div class="profile-menu-dropdown">
+        <a href="javascript:void(0)" class="profile-menu-dropdown-toggle" onclick="toggleProfileMenuDropdown(event)">Workouts <span class="dropdown-arrow">►</span></a>
+        <div class="profile-menu-dropdown-content">
+          <a href="exercise-library.html">Exercise Library</a>
+          <a href="https://musclewiki.com/" target="_blank" rel="noopener noreferrer">Target Muscle Training</a>
+          <a href="https://musclewiki.com/workout-generator" target="_blank" rel="noopener noreferrer">Workout Generator</a>
+        </div>
+      </div>
+      <a href="nutritional-plan.html">Nutritional Plan</a>
+      <a href="calculator.html">Calculator</a>
+      <a href="settings.html">Settings</a>
+      <a href="#" style="border-top: 1px solid #25a1c2; margin-top: 5px;">Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <a href="#" class="logo-link">
+      <img src="track-fit-icon.png" alt="Track Fit Logo" class="logo" />
+    </a>
+
+    <div class="menu">
+      <div class="dropdown" id="dropdown-phases">
+        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown('dropdown-phases')">Phases</a>
+        <div class="dropdown-menu">
+          <a href="phase1.html">Phase 1</a>
+          <a href="phase2.html">Phase 2</a>
+          <a href="phase3.html">Phase 3</a>
+          <a href="phase4.html">Phase 4</a>
+        </div>
+      </div>
+      <div class="dropdown" id="dropdown-schedule">
+        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown('dropdown-schedule')">Schedule</a>
+        <div class="dropdown-menu">
+          <a href="#schedule">Routine Schedule</a>
+          <a href="sch-phase1.html">Phase 1</a>
+          <a href="sch-phase2.html">Phase 2</a>
+          <a href="sch-phase3.html">Phase 3</a>
+          <a href="sch-phase4.html">Phase 4</a>
+        </div>
+      </div>
+      <div class="dropdown" id="dropdown-workout">
+        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown('dropdown-workout')">Workout Plan</a>
+        <div class="dropdown-menu">
+          <a href="workoutplan1.html">Phase 1</a>
+          <a href="workoutplan2.html">Phase 2</a>
+          <a href="workoutplan3.html">Phase 3</a>
+          <a href="workoutplan4.html">Phase 4</a>
+        </div>
+      </div>
+      <div class="dropdown" id="dropdown-diet">
+        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown('dropdown-diet')">Diet Plan</a>
+        <div class="dropdown-menu">
+          <a href="diet-phase1.html">Phase 1</a>
+          <a href="diet-phase2.html">Phase 2</a>
+          <a href="diet-phase3.html">Phase 3</a>
+          <a href="diet-phase4.html">Phase 4</a>
+          <a href="detox.html">Detox Drink</a>
+        </div>
+      </div>
+      <div class="dropdown" id="dropdown-trackers">
+        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown('dropdown-trackers')">Trackers</a>
+        <div class="dropdown-menu">
+          <a href="fitnesstracker.html">Fitness Tracker</a>
+          <a href="workouttracker.html">Workout Tracker</a>
+          <a href="mealtracker.html">Meal Tracker</a>
+        </div>
+      </div>
+      <div class="dropdown" id="dropdown-dataview">
+        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown('dropdown-dataview')">Data View</a>
+        <div class="dropdown-menu">
+          <a href="dataview1.html">Weight Line Graph</a>
+          <a href="dataview2.html">Sleep Log</a>
+          <a href="dataview3.html">Step Log</a>
+          <a href="dataview5.html">HWF Sync</a>
+          <a href="dataview6.html">Calorie Split Duo</a>
+          <a href="dataview4.html">Daily Macro Breakdown</a>
+        </div>
+      </div>
+      <div class="dropdown" id="dropdown-body">
+        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown('dropdown-body')">Body Transformation</a>
+        <div class="dropdown-menu">
+          <a href="#body-composition">Body Composition</a>
+          <a href="#measurements">Measurements</a>
+          <a href="visualprogress.html">Visual Progress</a>
+        </div>
+      </div>
+      <a href="tips.html" class="menu-item">Tips</a> 
+    </div>
+  </div>
+
+  <div class="quote-section">
+    <div class="quote">
+      “Before I climb Everest, I must conquer the mountain in my mind.”
+      <div class="author">— Hrithik Roshan</div>
+    </div>
+  </div>
+
+  <div id="phases" class="phases">
+    <div class="phases-title">Phases</div>
+    <p class="phases-description">
+      Your Bodybuilding journey is divided into phases to focus on one goal at a time, like fat loss or muscle gain. It helps avoid confusion, keeps progress steady, and makes the journey easier to follow.
+    </p>
+    <ul class="phase-list">
+      <li id="phase1"><p>Phase 1:</p><div class="phase-description">Cardio-Metabolic Reset — Lower blood pressure, lose 5–7 kg, build aerobic base</div></li>
+      <li id="phase2"><p>Phase 2:</p><div class="phase-description">Safe Muscle Building — Build muscle and strength without overloading heart or blood pressure</div></li>
+      <li id="phase3"><p>Phase 3:</p><div class="phase-description">Lean Muscle & Fat Control — Shape muscles, maintain or slightly reduce weight</div></li>
+      <li id="phase4"><p>Phase 4:</p><div class="phase-description">Shred & Abs Reveal — Lean, defined physique with visible abs</div></li>
+    </ul>
+    <table>
+      <tr><th>Phase</th><th>Title</th><th>Duration</th><th>Months</th></tr>
+      <tr><td>Phase 1</td><td>Cardio-Metabolic Reset</td><td>3 Months</td><td>June – August 2025</td></tr>
+      <tr><td>Phase 2</td><td>Safe Muscle Building</td><td>3 Months</td><td>Sept – Nov 2025</td></tr>
+      <tr><td>Phase 3</td><td>Lean Muscle & Fat Control</td><td>3 Months</td><td>Dec 2025 – Feb 2026</td></tr>
+      <tr><td>Phase 4</td><td>Shred & Abs Reveal</td><td>3 Months</td><td>March – May 2026</td></tr>
+    </table>
+  </div>
+
+  <div id="schedule" class="schedule">
+    <div class="schedule-title">Schedule</div>
+    <table>
+      <tr><th>Time</th><th>Activity</th></tr>
+      <tr><td>6:00 AM</td><td>Wake up & freshen up</td></tr>
+      <tr><td>6:15 – 8:00 AM</td><td>Workout 1</td></tr>
+      <tr><td>8:00 AM</td><td>Detox drink</td></tr>
+      <tr><td>8:15 – 8:30 AM</td><td>Bath + cooldown</td></tr>
+      <tr><td>8:30 – 9:00 AM</td><td>Breakfast: High protein + complex carbs + veggies</td></tr>
+      <tr><td>11:00 AM</td><td>Mid-morning Snack</td></tr>
+      <tr><td>1:00 PM</td><td>Lunch: Lean protein + low-glycemic carbs + fiber-rich vegetables</td></tr>
+      <tr><td>4:00 PM</td><td>Pre-workout Snack</td></tr>
+      <tr><td>5:00 – 7:00 PM</td><td>Workout 2</td></tr>
+      <tr><td>7:30 PM</td><td>Dinner: Lean protein + greens (low-carb)</td></tr>
+      <tr><td>9:30 PM</td><td>Light walk / stretching / journaling or meditation</td></tr>
+      <tr><td>10:30 PM</td><td>Sleep</td></tr>
+    </table>
+    <p style="margin-top: 20px; font-size: 1rem; color: #ccc; text-align: left; padding-left: 5%;">
+      <strong>Note:</strong> Monday to Friday – Workout, Saturday – Yoga and Stretches, Sunday – Surya Namaskar
+    </p>
+  </div>
+
+  <div id="body-transformation" class="phases">
+    <div class="phases-title">Body Transformation</div>
+    <p class="phases-description">
+      Track your progress with before-and-after metrics and visual comparison.
+    </p>
+
+    <div id="body-composition">
+      <h2 class="section-heading">Body Composition</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold">Before</h3>
+          <div>
+            <label>Height</label>
+            <div class="flex gap-2 mb-2">
+              <input id="beforeFeet" type="number" placeholder="ft" class="p-2 rounded w-1/2" />
+              <input id="beforeInches" type="number" placeholder="in" class="p-2 rounded w-1/2" />
+              <select id="beforeHeightUnit" class="p-2 rounded">
+                <option value="ft">ft/in</option>
+                <option value="cm">cm</option>
+              </select>
+            </div>
+            <p id="heightToggleNote" class="text-sm text-gray-400"></p>
+          </div>
+          <div>
+            <label>Weight</label>
+            <div class="flex items-center gap-2">
+              <input id="beforeWeight" type="number" placeholder="Weight" class="p-2 rounded w-full" />
+              <select id="beforeWeightUnit" class="p-2 rounded">
+                <option value="kg">kg</option>
+                <option value="lbs">lbs</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label>BMI</label>
+            <input id="beforeBMI" type="text" class="p-2 rounded w-full bg-[#1b2a3c]" readonly />
+            <p id="beforeBMIStatus" class="text-sm text-gray-400 mt-1"></p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold">After</h3>
+          <div>
+            <label>Height</label>
+            <div class="flex gap-2 mb-2">
+              <input id="afterFeet" type="number" placeholder="ft" readonly class="p-2 rounded w-1/2 bg-[#1b2a3c]" />
+              <input id="afterInches" type="number" placeholder="in" readonly class="p-2 rounded w-1/2 bg-[#1b2a3c]" />
+              <select id="afterHeightUnit" class="p-2 rounded bg-[#1b2a3c] text-gray-400" disabled>
+                <option value="ft">ft/in</option>
+                <option value="cm">cm</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label>Weight</label>
+            <div class="flex items-center gap-2">
+              <input id="afterWeight" type="number" placeholder="Weight" class="p-2 rounded w-full" />
+              <select id="afterWeightUnit" class="p-2 rounded">
+                <option value="kg">kg</option>
+                <option value="lbs">lbs</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label>BMI</label>
+            <input id="afterBMI" type="text" class="p-2 rounded w-full bg-[#1b2a3c]" readonly />
+            <p id="afterBMIStatus" class="text-sm text-gray-400 mt-1"></p>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-4 mt-4">
+        <button class="reset-button" onclick="resetBodyComposition()">Reset After</button>
+        <button class="reset-button" onclick="deleteBodyComposition()">Delete All</button>
+      </div>
+    </div>
+
+    <div id="measurements" class="mt-8">
+      <h2 class="section-heading">Measurements</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold">Before</h3>
+          <div>
+            <label for="beforeWaist">Waist</label>
+            <div class="flex gap-2">
+              <input id="beforeWaist" type="number" class="p-2 rounded w-full" placeholder="Waist" />
+              <select id="beforeWaistUnit" class="p-2 rounded">
+                <option value="cm">cm</option>
+                <option value="in">in</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="beforeNeck">Neck</label>
+            <div class="flex gap-2">
+              <input id="beforeNeck" type="number" class="p-2 rounded w-full" placeholder="Neck" />
+              <select id="beforeNeckUnit" class="p-2 rounded">
+                <option value="cm">cm</option>
+                <option value="in">in</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="beforeHips">Hips</label>
+            <div class="flex gap-2">
+              <input id="beforeHips" type="number" class="p-2 rounded w-full" placeholder="Hips" />
+              <select id="beforeHipsUnit" class="p-2 rounded">
+                <option value="cm">cm</option>
+                <option value="in">in</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="beforeBodyFat">Body Fat %</label>
+            <input id="beforeBodyFat" type="text" class="p-2 rounded w-full bg-[#1b2a3c]" readonly />
+            <div id="beforeBodyFatStatus" class="text-sm text-gray-300 mt-1"></div>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold">After</h3>
+          <div>
+            <label for="afterWaist">Waist</label>
+            <div class="flex gap-2">
+              <input id="afterWaist" type="number" class="p-2 rounded w-full" placeholder="Waist" />
+              <select id="afterWaistUnit" class="p-2 rounded">
+                <option value="cm">cm</option>
+                <option value="in">in</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="afterNeck">Neck</label>
+            <div class="flex gap-2">
+              <input id="afterNeck" type="number" class="p-2 rounded w-full" placeholder="Neck" />
+              <select id="afterNeckUnit" class="p-2 rounded">
+                <option value="cm">cm</option>
+                <option value="in">in</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="afterHips">Hips</label>
+            <div class="flex gap-2">
+              <input id="afterHips" type="number" class="p-2 rounded w-full" placeholder="Hips" />
+              <select id="afterHipsUnit" class="p-2 rounded">
+                <option value="cm">cm</option>
+                <option value="in">in</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="afterBodyFat">Body Fat %</label>
+            <input id="afterBodyFat" type="text" class="p-2 rounded w-full bg-[#1b2a3c]" readonly />
+            <div id="afterBodyFatStatus" class="text-sm text-gray-300 mt-1"></div>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-4 mt-4">
+        <button class="reset-button" onclick="resetMeasurements()">Reset After</button>
+        <button class="reset-button" onclick="deleteMeasurements()">Delete All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll to top button -->
+  <div class="scroll-to-top" onclick="scrollToTop()"></div>
+
+  <script>
+    // Force scroll to top immediately on page load
+    window.scrollTo(0, 0);
+
+    // Universal Conversion Constants
+    const CONVERSIONS = {
+      KG_TO_LBS: 2.20462,
+      LBS_TO_KG: 0.453592,
+      CM_TO_IN: 0.393701,
+      IN_TO_CM: 2.54,
+      M_TO_IN: 39.3701,
+      IN_TO_M: 0.0254
+    };
+
+    function convertUnits(value, fromUnit, toUnit, type) {
+      if (fromUnit === toUnit || isNaN(value)) return value;
+      if (type === 'length') {
+        if (fromUnit === 'cm' && toUnit === 'in') return value * CONVERSIONS.CM_TO_IN;
+        if (fromUnit === 'in' && toUnit === 'cm') return value * CONVERSIONS.IN_TO_CM;
+      } else if (type === 'weight') {
+        if (fromUnit === 'kg' && toUnit === 'lbs') return value * CONVERSIONS.KG_TO_LBS;
+        if (fromUnit === 'lbs' && toUnit === 'kg') return value * CONVERSIONS.LBS_TO_KG;
+      }
+      return value;
+    }
+
+    function toggleProfileMenu() {
+      const menu = document.getElementById("profileMenu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+      document.querySelectorAll('.profile-menu-dropdown').forEach(d => {
+        d.classList.remove('active');
+        d.querySelector('.profile-menu-dropdown-content').style.display = 'none';
+      });
+    }
+
+    function toggleProfileMenuDropdown(event) {
+      event.stopPropagation();
+      const dropdown = event.currentTarget.closest('.profile-menu-dropdown');
+      if (dropdown) {
+        document.querySelectorAll('.profile-menu-dropdown').forEach(d => {
+          if (d !== dropdown) {
+            d.classList.remove('active');
+            d.querySelector('.profile-menu-dropdown-content').style.display = 'none';
+          }
+        });
+        dropdown.classList.toggle('active');
+        const content = dropdown.querySelector('.profile-menu-dropdown-content');
+        if (dropdown.classList.contains('active')) {
+          content.style.display = 'block';
+          content.style.opacity = '1';
+          content.style.visibility = 'visible';
+        } else {
+          content.style.opacity = '0';
+          content.style.visibility = 'hidden';
+          setTimeout(() => {
+            if (!dropdown.classList.contains('active')) {
+              content.style.display = 'none';
+            }
+          }, 200);
+        }
+      }
+    }
+
+    function toggleDropdown(dropdownId) {
+      const dropdown = document.getElementById(dropdownId);
+      const isActive = dropdown.classList.contains('active');
+      document.querySelectorAll('.dropdown').forEach(d => {
+        d.classList.remove('active');
+      });
+      if (!isActive) {
+        dropdown.classList.add('active');
+      }
+    }
+
+    document.addEventListener('click', function(e) {
+      const menu = document.querySelector('.menu');
+      const profileMenu = document.getElementById("profileMenu");
+      const profileIcon = document.querySelector(".profile-icon");
+
+      // Allow clicks on <a> tags in profile-menu-dropdown-content to navigate
+      if (e.target.tagName === 'A' && e.target.closest('.profile-menu-dropdown-content')) {
+        return; // Let the browser handle the link navigation
+      }
+
+      // Close main menu dropdowns if clicking outside
+      let clickedInsideMainMenuDropdown = false;
+      document.querySelectorAll('.dropdown-menu').forEach(dm => {
+        if (dm.contains(e.target)) {
+          clickedInsideMainMenuDropdown = true;
+        }
+      });
+      if (!menu.contains(e.target) && !clickedInsideMainMenuDropdown) {
+        document.querySelectorAll('.dropdown').forEach(d => {
+          d.classList.remove('active');
+        });
+      }
+
+      // Close profile menu if clicking outside, but allow sub-dropdown clicks
+      let clickedInsideProfileSubDropdown = false;
+      document.querySelectorAll('.profile-menu-dropdown-content').forEach(pdc => {
+        if (pdc.contains(e.target)) {
+          clickedInsideProfileSubDropdown = true;
+        }
+      });
+      if (!profileMenu.contains(e.target) && !profileIcon.contains(e.target) && !clickedInsideProfileSubDropdown) {
+        profileMenu.style.display = "none";
+        document.querySelectorAll('.profile-menu-dropdown').forEach(d => {
+          d.classList.remove('active');
+          d.querySelector('.profile-menu-dropdown-content').style.display = 'none';
+          d.querySelector('.profile-menu-dropdown-content').style.opacity = '0';
+          d.querySelector('.profile-menu-dropdown-content').style.visibility = 'hidden';
+        });
+      }
+    });
+
+    // Prevent dropdown content clicks from bubbling up, but allow <a> clicks to navigate
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+      menu.addEventListener('click', function(e) {
+        if (e.target.tagName !== 'A') {
+          e.stopPropagation();
+        }
+      });
+    });
+
+    document.querySelectorAll('.profile-menu-dropdown-content').forEach(content => {
+      content.addEventListener('click', function(e) {
+        if (e.target.tagName !== 'A') {
+          e.stopPropagation();
+        }
+      });
+    });
+
+    function calculateBMI(weightKg, heightMeters) {
+      if (isNaN(weightKg) || isNaN(heightMeters) || heightMeters <= 0) return '';
+      return (weightKg / (heightMeters * heightMeters)).toFixed(2);
+    }
+
+    function getBMIStatus(bmi) {
+      const val = parseFloat(bmi);
+      if (isNaN(val)) return '';
+      if (val < 18.5) return 'Malnourished';
+      if (val < 24.9) return 'Fit';
+      if (val < 29.9) return 'Moderate';
+      return 'Obese';
+    }
+
+    function getHeightInMeters(feet, inches, unit) {
+      if (unit === 'cm') {
+        return (feet || 0) / 100;
+      } else {
+        const totalInches = (feet || 0) * 12 + (inches || 0);
+        return totalInches * CONVERSIONS.IN_TO_M;
+      }
+    }
+
+    function updateBMI(prefix) {
+      const feetInput = document.getElementById(`${prefix}Feet`);
+      const inchesInput = document.getElementById(`${prefix}Inches`);
+      const weightInput = document.getElementById(`${prefix}Weight`);
+      const heightUnitSelect = document.getElementById(`${prefix}HeightUnit`);
+      const weightUnitSelect = document.getElementById(`${prefix}WeightUnit`);
+      const bmiOutput = document.getElementById(`${prefix}BMI`);
+      const bmiStatus = document.getElementById(`${prefix}BMIStatus`);
+
+      const feet = parseFloat(feetInput.value) || 0;
+      const inches = parseFloat(inchesInput.value) || 0;
+      const weight = parseFloat(weightInput.value) || 0;
+      const heightUnit = heightUnitSelect.value;
+      const weightUnit = weightUnitSelect.value;
+
+      const heightMeters = getHeightInMeters(feet, inches, heightUnit);
+      const weightKg = convertUnits(weight, weightUnit, 'kg', 'weight');
+
+      const bmi = calculateBMI(weightKg, heightMeters);
+      bmiOutput.value = bmi ? `${bmi} kg/m²` : '';
+      bmiStatus.textContent = bmi ? getBMIStatus(bmi) : '';
+
+      if (prefix === 'before') {
+        if (feetInput.value !== '' || inchesInput.value !== '') {
+          if (heightUnit === 'cm') {
+            const totalInches = convertUnits(parseFloat(feetInput.value) || 0, 'cm', 'in', 'length');
+            document.getElementById('afterFeet').value = Math.floor(totalInches / 12);
+            document.getElementById('afterInches').value = (totalInches % 12).toFixed(1);
+          } else {
+            document.getElementById('afterFeet').value = feetInput.value;
+            document.getElementById('afterInches').value = inchesInput.value;
+          }
+          document.getElementById('afterHeightUnit').value = 'ft';
+        } else {
+          document.getElementById('afterFeet').value = '';
+          document.getElementById('afterInches').value = '';
+        }
+        updateBMI('after');
+      }
+    }
+
+    function calculateBodyFat(waistIn, neckIn, hipsIn) {
+      if (isNaN(waistIn) || isNaN(neckIn) || isNaN(hipsIn) || waistIn <= 0 || neckIn <= 0 || hipsIn <= 0) {
+        return '';
+      }
+      try {
+        if ((waistIn + hipsIn - neckIn) <= 0 || hipsIn <= 0) {
+          console.warn("Logarithm input for Body Fat calculation is non-positive.");
+          return '';
+        }
+        const term2 = 0.35004 * Math.log10(waistIn + hipsIn - neckIn);
+        const term3 = 0.221 * Math.log10(hipsIn);
+        const denominator = 1.29579 - term2 + term3;
+        if (denominator <= 0 || isNaN(denominator)) {
+          console.warn("Body Fat calculation denominator is non-positive or NaN after log ops.");
+          return '';
+        }
+        const fat = (495 / denominator) - 450;
+        return Math.max(0, fat).toFixed(2);
+      } catch (e) {
+        console.error("Error calculating body fat:", e);
+        return '';
+      }
+    }
+
+    function getBodyFatStatus(percent) {
+      percent = parseFloat(percent);
+      if (isNaN(percent)) return '';
+      if (percent < 10) return "Excellent";
+      if (percent < 15) return "Good";
+      if (percent < 20) return "Average";
+      if (percent < 25) return "High";
+      return "Very High";
+    }
+
+    function updateBodyFat(prefix) {
+      const waistInput = document.getElementById(`${prefix}Waist`);
+      const neckInput = document.getElementById(`${prefix}Neck`);
+      const hipsInput = document.getElementById(`${prefix}Hips`);
+      const waistUnitSelect = document.getElementById(`${prefix}WaistUnit`);
+      const neckUnitSelect = document.getElementById(`${prefix}NeckUnit`);
+      const hipsUnitSelect = document.getElementById(`${prefix}HipsUnit`);
+      const waistVal = parseFloat(waistInput.value) || 0;
+      const neckVal = parseFloat(neckInput.value) || 0;
+      const hipsVal = parseFloat(hipsInput.value) || 0;
+      const waistIn = convertUnits(waistVal, waistUnitSelect.value, 'in', 'length');
+      const neckIn = convertUnits(neckVal, neckUnitSelect.value, 'in', 'length');
+      const hipsIn = convertUnits(hipsVal, hipsUnitSelect.value, 'in', 'length');
+      const result = calculateBodyFat(waistIn, neckIn, hipsIn);
+      const resultBox = document.getElementById(`${prefix}BodyFat`);
+      const statusBox = document.getElementById(`${prefix}BodyFatStatus`);
+      if (result !== '') {
+        resultBox.value = `${result} %`;
+        statusBox.textContent = getBodyFatStatus(result);
+      } else {
+        resultBox.value = '';
+        statusBox.textContent = '';
+      }
+    }
+
+    function resetBodyComposition() {
+      document.getElementById("afterWeight").value = '';
+      document.getElementById("afterWeightUnit").value = 'kg';
+      document.getElementById("afterBMI").value = '';
+      document.getElementById("afterBMIStatus").textContent = '';
+      document.getElementById('afterFeet').value = document.getElementById('beforeFeet').value;
+      document.getElementById('afterInches').value = document.getElementById('beforeInches').value;
+      document.getElementById("afterWeightUnit").dataset.lastUnit = 'kg';
+      updateBMI('after');
+    }
+
+    function resetMeasurements() {
+      document.getElementById("afterWaist").value = '';
+      document.getElementById("afterWaistUnit").value = 'cm';
+      document.getElementById("afterNeck").value = '';
+      document.getElementById("afterNeckUnit").value = 'cm';
+      document.getElementById("afterHips").value = '';
+      document.getElementById("afterHipsUnit").value = 'cm';
+      document.getElementById("afterBodyFat").value = '';
+      document.getElementById("afterBodyFatStatus").textContent = '';
+      document.getElementById("afterWaistUnit").dataset.lastUnit = 'cm';
+      document.getElementById("afterNeckUnit").dataset.lastUnit = 'cm';
+      document.getElementById("afterHipsUnit").dataset.lastUnit = 'cm';
+      updateBodyFat('after');
+    }
+
+    function deleteBodyComposition() {
+      document.getElementById("beforeFeet").value = '';
+      document.getElementById("beforeInches").value = '';
+      document.getElementById("beforeWeight").value = '';
+      document.getElementById("afterWeight").value = '';
+      document.getElementById("beforeBMI").value = '';
+      document.getElementById("afterBMI").value = '';
+      document.getElementById("heightToggleNote").textContent = '';
+      document.getElementById("beforeBMIStatus").textContent = '';
+      document.getElementById("afterBMIStatus").textContent = '';
+      document.getElementById("beforeHeightUnit").value = 'ft';
+      document.getElementById("beforeWeightUnit").value = 'kg';
+      document.getElementById("afterWeightUnit").value = 'kg';
+      document.getElementById("afterFeet").value = '';
+      document.getElementById("afterInches").value = '';
+      document.getElementById("beforeHeightUnit").dataset.lastUnit = 'ft';
+      document.getElementById("beforeWeightUnit").dataset.lastUnit = 'kg';
+      document.getElementById("afterWeightUnit").dataset.lastUnit = 'kg';
+      document.getElementById("beforeInches").style.display = 'inline-block';
+      document.getElementById("beforeFeet").placeholder = "ft";
+      updateBMI('before');
+      updateBMI('after');
+    }
+
+    function deleteMeasurements() {
+      document.getElementById("beforeWaist").value = '';
+      document.getElementById("beforeNeck").value = '';
+      document.getElementById("beforeHips").value = '';
+      document.getElementById("afterWaist").value = '';
+      document.getElementById("afterNeck").value = '';
+      document.getElementById("afterHips").value = '';
+      document.getElementById("beforeBodyFat").value = '';
+      document.getElementById("afterBodyFat").value = '';
+      document.getElementById("beforeBodyFatStatus").textContent = '';
+      document.getElementById("afterBodyFatStatus").textContent = '';
+      document.getElementById("beforeWaistUnit").value = 'cm';
+      document.getElementById("beforeNeckUnit").value = 'cm';
+      document.getElementById("beforeHipsUnit").value = 'cm';
+      document.getElementById("afterWaistUnit").value = 'cm';
+      document.getElementById("afterNeckUnit").value = 'cm';
+      document.getElementById("afterHipsUnit").value = 'cm';
+      document.getElementById("beforeWaistUnit").dataset.lastUnit = 'cm';
+      document.getElementById("beforeNeckUnit").dataset.lastUnit = 'cm';
+      document.getElementById("beforeHipsUnit").dataset.lastUnit = 'cm';
+      document.getElementById("afterWaistUnit").dataset.lastUnit = 'cm';
+      document.getElementById("afterNeckUnit").dataset.lastUnit = 'cm';
+      document.getElementById("afterHipsUnit").dataset.lastUnit = 'cm';
+      updateBodyFat('before');
+      updateBodyFat('after');
+    }
+
+    // Scroll to top function
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Ensure page starts at top after DOM is loaded
+      window.scroll(0, 0);
+
+      // Initialize data-lastUnit for all selects
+      ['beforeHeightUnit', 'beforeWeightUnit', 'afterWeightUnit', 
+       'beforeWaistUnit', 'beforeNeckUnit', 'beforeHipsUnit', 
+       'afterWaistUnit', 'afterNeckUnit', 'afterHipsUnit'].forEach(id => {
+        const select = document.getElementById(id);
+        select.dataset.lastUnit = select.value;
+      });
+
+      // Height unit change for 'before'
+      document.getElementById("beforeHeightUnit").addEventListener("change", function() {
+        const feetInput = document.getElementById("beforeFeet");
+        const inchesInput = document.getElementById("beforeInches");
+        const currentUnit = this.value;
+        let currentFeet = parseFloat(feetInput.value) || 0;
+        let currentInches = parseFloat(inchesInput.value) || 0;
+
+        if (currentUnit === 'cm') {
+          const totalInches = (currentFeet * 12) + currentInches;
+          const cmValue = convertUnits(totalInches, 'in', 'cm', 'length').toFixed(1);
+          feetInput.value = cmValue;
+          feetInput.placeholder = "cm";
+          inchesInput.style.display = 'none';
+          inchesInput.value = '';
+          document.getElementById("heightToggleNote").textContent = "Height in cm.";
+        } else {
+          let cmValue = parseFloat(feetInput.value) || 0;
+          const totalInches = convertUnits(cmValue, 'cm', 'in', 'length');
+          feetInput.value = Math.floor(totalInches / 12);
+          inchesInput.value = (totalInches % 12).toFixed(1);
+          feetInput.placeholder = "ft";
+          inchesInput.style.display = 'inline-block';
+          document.getElementById("heightToggleNote").textContent = "Height in ft/in.";
+        }
+        updateBMI('before');
+      });
+
+      // BMI input listeners
+      ["beforeFeet", "beforeInches", "beforeWeight"].forEach(id => {
+        document.getElementById(id).addEventListener("input", () => updateBMI('before'));
+      });
+      ["afterWeight"].forEach(id => {
+        document.getElementById(id).addEventListener("input", () => updateBMI('after'));
+      });
+
+      // Weight unit change listeners
+      ['beforeWeightUnit', 'afterWeightUnit'].forEach(id => {
+        const select = document.getElementById(id);
+        select.addEventListener("change", function() {
+          const prefix = id.split('WeightUnit')[0];
+          const weightInput = document.getElementById(`${prefix}Weight`);
+          let weight = parseFloat(weightInput.value) || 0;
+          const newUnit = this.value;
+          const oldUnit = this.dataset.lastUnit || (newUnit === 'kg' ? 'lbs' : 'kg');
+          if (!isNaN(weight) && weight !== 0) {
+            weightInput.value = convertUnits(weight, oldUnit, newUnit, 'weight').toFixed(1);
+          }
+          this.dataset.lastUnit = newUnit;
+          updateBMI(prefix);
+        });
+      });
+
+      // Body Fat input listeners
+      ['before', 'after'].forEach(prefix => {
+        ['Waist', 'Neck', 'Hips'].forEach(part => {
+          const input = document.getElementById(`${prefix}${part}`);
+          const unitSelect = document.getElementById(`${prefix}${part}Unit`);
+          input.addEventListener('input', () => updateBodyFat(prefix));
+          unitSelect.addEventListener('change', function() {
+            let currentValue = parseFloat(input.value) || 0;
+            const newUnit = this.value;
+            const oldUnit = this.dataset.lastUnit;
+            if (!isNaN(currentValue) && currentValue !== 0) {
+              input.value = convertUnits(currentValue, oldUnit, newUnit, 'length').toFixed(1);
+            }
+            this.dataset.lastUnit = newUnit;
+            updateBodyFat(prefix);
+          });
+        });
+      });
+
+      // Scroll-to-top button visibility
+      const scrollToTopButton = document.querySelector('.scroll-to-top');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) { // Show button after scrolling 300px
+          scrollToTopButton.classList.add('visible');
+        } else {
+          scrollToTopButton.classList.remove('visible');
+        }
+      });
+
+      // Initial updates
+      updateBMI('before');
+      updateBMI('after');
+      updateBodyFat('before');
+      updateBodyFat('after');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>😴 Sleep Log</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <script src ="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111c28;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    h2 {
+      color: #2ba8b8;
+      margin-bottom: 20px;
+    }
+    #previousEntriesContainer {
+      margin-top: 30px;
+      border: 1px solid #2ba8b8;
+      border-radius: 6px;
+      max-width: 800px;
+      background-color: #1c2b3a;
+      padding: 16px;
+      margin-left: auto;
+      margin-right: auto;
+      display: none;
+      text-align: left;
+    }
+    #previousEntriesContainer h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-weight: 700;
+      color: #2ba8b8;
+      text-align: center;
+    }
+    #entriesList {
+      list-style-type: decimal !important;
+      list-style-position: inside !important;
+      padding-left: 0;
+      max-height: 200px;
+      overflow-y: auto;
+      margin: 0;
+      color: #fff;
+      font-weight: 600;
+    }
+    #entriesList li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid #2ba8b8;
+      cursor: pointer;
+      user-select: none;
+    }
+    #entriesList li:last-child {
+      border-bottom: none;
+    }
+    #entriesList li:hover {
+      background-color: #2ba8b8;
+      color: #111c28;
+    }
+    .delete-entry-btn {
+      background: transparent;
+      border: none;
+      color: #e03e3e;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      user-select: none;
+      transition: color 0.3s;
+    }
+    .delete-entry-btn:hover {
+      color: #b62b2b;
+    }
+    button {
+      margin-right: 8px;
+      margin-top: 10px;
+      background: #2ba8b8;
+      border: none;
+      color: #111c28;
+      font-weight: bold;
+      padding: 8px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background: #1a7280;
+      color: white;
+    }
+    button.clear-btn, button.reset-btn {
+      background: #e03e3e;
+      color: #fff;
+    }
+    button.clear-btn:hover, button.reset-btn:hover {
+      background: #b62b2b;
+    }
+    input {
+      padding: 6px 8px;
+      margin-right: 12px;
+      border-radius: 5px;
+      border: 1px solid #2ba8b8;
+      background: #1c2b3a;
+      color: #fff;
+      font-weight: 600;
+      width: 120px;
+    }
+    input[type="number"] {
+      width: 120px;
+    }
+    label {
+      margin-right: 6px;
+    }
+    #sleepChart {
+      background: #1c2b3a;
+      margin: 30px auto;
+      border-radius: 8px;
+      max-width: 800px;
+      width: 100%;
+      height: 400px;
+    }
+    #inputContainer {
+      margin: 0 auto 20px auto;
+      max-width: 800px;
+    }
+    #buttonsContainer {
+      margin: 10px auto 0 auto;
+      max-width: 800px;
+      text-align: center;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1000px;
+      margin: 40px auto;
+    }
+    .nav-buttons a {
+      background-color: #2ba8b8;
+      color: #0f1928;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .nav-buttons a:hover {
+      background-color: #1d7c88;
+    }
+  </style>
+</head>
+<body>
+  <h2>😴 Sleep Log</h2>
+
+  <div id="inputContainer">
+    <label for="dateInput">📅 Date:</label>
+    <input type="text" id="dateInput" placeholder="dd-mm-yyyy" />
+
+    <label for="hoursInput">🕒 Hours Slept:</label>
+    <input type="number" id="hoursInput" min="0" max="24" step="0.1" placeholder="e.g. 7.5" />
+  </div>
+
+  <div id="buttonsContainer">
+    <button id="updateBtn">📈 Update Chart</button>
+    <button id="clearBtn" class="clear-btn">🧽 Clear</button>
+    <button id="resetZoomBtn">🔍 Reset Zoom</button>
+    <button id="toggleEntriesBtn">✏️ Edit Previous Entries</button>
+    <button id="resetBtn" class="reset-btn">🔄 Reset</button>
+  </div>
+
+  <canvas id="sleepChart"></canvas>
+
+  <div id="previousEntriesContainer">
+    <h3>📝 Previous Entered Values</h3>
+    <ul id="entriesList"></ul>
+  </div>
+
+  <script>
+    const dateInput = document.getElementById('dateInput');
+    const hoursInput = document.getElementById('hoursInput');
+    const updateBtn = document.getElementById('updateBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const toggleEntriesBtn = document.getElementById('toggleEntriesBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resetZoomBtn = document.getElementById('resetZoomBtn');
+    const previousEntriesContainer = document.getElementById('previousEntriesContainer');
+    const entriesList = document.getElementById('entriesList');
+    const inputContainer = document.getElementById('inputContainer');
+
+    // Initialize Flatpickr
+    flatpickr(dateInput, {
+      dateFormat: "d-m-Y",
+      maxDate: "today",
+      allowInput: true,
+      placeholder: "dd-mm-yyyy"
+    });
+
+    function resetInputsToDefault() {
+      dateInput.value = "";
+      hoursInput.value = "";
+      dateInput._flatpickr.clear(); // Clear Flatpickr's internal state
+    }
+
+    resetInputsToDefault();
+
+    let sleepData = JSON.parse(localStorage.getItem('sleepLog')) || {};
+
+    const ctx = document.getElementById('sleepChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        datasets: [{
+          label: 'Hours Slept',
+          data: [],
+          backgroundColor: '#2ba8b8',
+          borderColor: '#2ba8b8',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: {
+          legend: { labels: { color: '#2ba8b8', font: { size: 16, weight: 'bold' } } },
+          tooltip: {
+            callbacks: {
+              title: ctx => new Date(ctx[0].parsed.x).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+              label: ctx => ctx.parsed.y + ' hours'
+            }
+          },
+          zoom: {
+            zoom: {
+              wheel: { enabled: true },
+              pinch: { enabled: true },
+              mode: 'x',
+            },
+            pan: {
+              enabled: true,
+              mode: 'x',
+            }
+          }
+        },
+        scales: {
+          x: {
+            type: 'time',
+            time: { unit: 'day', tooltipFormat: 'dd-MM-yyyy' },
+            ticks: { color: '#2ba8b8', font: { weight: 'bold' } },
+            grid: { 
+              color: '#1a2c3f',
+              borderColor: '#2ba8b8',
+              drawTicks: true,
+              drawOnChartArea: true,
+              drawBorder: true,
+              tickLength: 10,
+              lineWidth: 1
+            }
+          },
+          y: {
+            beginAtZero: true,
+            max: 24,
+            ticks: { color: '#2ba8b8', font: { weight: 'bold' } },
+            grid: { 
+              color: '#1a2c3f', 
+              borderColor: '#2ba8b8', 
+              drawTicks: true,
+              drawOnChartArea: true,
+              drawBorder: true,
+              lineWidth: 1
+            }
+          }
+        }
+      }
+    });
+
+    function getChartData() {
+      const dataPoints = [];
+      for (const key in sleepData) {
+        const [day, month, year] = key.split('-').map(Number);
+        dataPoints.push({
+          x: new Date(year, month - 1, day),
+          y: sleepData[key]
+        });
+      }
+      dataPoints.sort((a, b) => a.x - b.x);
+      return dataPoints;
+    }
+
+    function renderChart() {
+      chart.data.datasets[0].data = getChartData();
+      chart.update();
+    }
+
+    function saveData() {
+      localStorage.setItem('sleepLog', JSON.stringify(sleepData));
+    }
+
+    function updateEntriesList() {
+      entriesList.innerHTML = '';
+      const keysSorted = Object.keys(sleepData).sort((a, b) => {
+        const [dayA, monthA, yearA] = a.split('-').map(Number);
+        const [dayB, monthB, yearB] = b.split('-').map(Number);
+        return new Date(yearA, monthA - 1, dayA) - new Date(yearB, monthB - 1, dayB);
+      });
+
+      if (keysSorted.length === 0) {
+        previousEntriesContainer.style.display = 'none';
+        toggleEntriesBtn.textContent = "✏️ Edit Previous Entries";
+        return;
+      }
+
+      previousEntriesContainer.style.display = 'block'; // Ensure container is visible if there are entries
+      keysSorted.forEach((key) => {
+        const li = document.createElement('li');
+        const [day, month, year] = key.split('-').map(Number);
+        const dateText = `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year} — ${sleepData[key]} hours`;
+        li.textContent = dateText;
+        li.title = "Click to edit this entry";
+
+        li.addEventListener('click', () => {
+          dateInput.value = `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
+          hoursInput.value = sleepData[key];
+          dateInput._flatpickr.setDate(`${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`, true);
+          inputContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = '❌';
+        delBtn.className = 'delete-entry-btn';
+        delBtn.title = `Delete entry for ${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
+        delBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (confirm(`Delete entry for ${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}?`)) {
+            delete sleepData[key];
+            saveData();
+            updateEntriesList();
+            renderChart();
+          }
+        });
+
+        li.appendChild(delBtn);
+        entriesList.appendChild(li);
+      });
+    }
+
+    function addSleepData() {
+      const dateValue = dateInput.value;
+      const hours = parseFloat(hoursInput.value);
+
+      if (!dateValue || !/^\d{2}-\d{2}-\d{4}$/.test(dateValue)) {
+        alert("Please enter a valid date in dd-mm-yyyy format.");
+        return;
+      }
+
+      if (isNaN(hours) || hours < 0 || hours > 24) {
+        alert("Please enter a valid number of hours between 0 and 24.");
+        return;
+      }
+
+      const [day, month, year] = dateValue.split('-').map(Number);
+      const key = `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
+      sleepData[key] = hours;
+      saveData();
+      renderChart();
+      updateEntriesList();
+      resetInputsToDefault();
+    }
+
+    function clearInputsOnly() {
+      resetInputsToDefault();
+    }
+
+    function resetAllData() {
+      if (confirm("Are you sure you want to reset all saved data? This cannot be undone.")) {
+        sleepData = {};
+        localStorage.removeItem('sleepLog'); // Explicitly clear localStorage
+        chart.data.datasets[0].data = []; // Clear chart data
+        chart.update(); // Update chart to reflect empty data
+        entriesList.innerHTML = ''; // Clear entries list
+        previousEntriesContainer.style.display = 'none'; // Hide entries container
+        toggleEntriesBtn.textContent = "✏️ Edit Previous Entries"; // Reset button text
+        resetInputsToDefault(); // Clear input fields
+      }
+    }
+
+    function toggleEntriesVisibility() {
+      if (previousEntriesContainer.style.display === 'block') {
+        previousEntriesContainer.style.display = 'none';
+        toggleEntriesBtn.textContent = "✏️ Edit Previous Entries";
+      } else {
+        updateEntriesList();
+        if (Object.keys(sleepData).length > 0) {
+          previousEntriesContainer.style.display = 'block';
+          toggleEntriesBtn.textContent = "⬇️ Hide Previous Entries";
+          previousEntriesContainer.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    }
+
+    function resetSleepZoom() {
+      chart.resetZoom();
+    }
+
+    // Attach event listeners
+    updateBtn.addEventListener('click', addSleepData);
+    clearBtn.addEventListener('click', clearInputsOnly);
+    toggleEntriesBtn.addEventListener('click', toggleEntriesVisibility);
+    resetBtn.addEventListener('click', resetAllData);
+    resetZoomBtn.addEventListener('click', resetSleepZoom);
+
+    // Initial render
+    renderChart();
+    updateEntriesList();
+  </script>
+  <div class="nav-buttons">
+    <a href="dataview1.html">← Weight Line Graph</a>
+    <a href="dataview3.html">Step Log →</a>
+  </div>
+</body>
+</html>

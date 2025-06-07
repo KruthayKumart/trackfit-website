@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>👣 Step Log</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet"/>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111c28;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    h2 {
+      color: #2ba8b8;
+      margin-bottom: 20px;
+    }
+    #previousEntriesContainer {
+      margin-top: 30px;
+      border: 1px solid #2ba8b8;
+      border-radius: 6px;
+      max-width: 800px;
+      background-color: #1c2b3a;
+      padding: 16px;
+      margin-left: auto;
+      margin-right: auto;
+      display: none;
+      text-align: left;
+    }
+    #previousEntriesContainer h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-weight: 700;
+      color: #2ba8b8;
+      text-align: center;
+    }
+    #entriesList {
+      list-style-type: decimal !important;
+      list-style-position: inside !important;
+      padding-left: 0;
+      max-height: 200px;
+      overflow-y: auto;
+      margin: 0;
+      color: #fff;
+      font-weight: 600;
+    }
+    #entriesList li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid #2ba8b8;
+      cursor: pointer;
+      user-select: none;
+    }
+    #entriesList li:last-child {
+      border-bottom: none;
+    }
+    #entriesList li:hover {
+      background-color: #2ba8b8;
+      color: #111c28;
+    }
+    .delete-entry-btn {
+      background: transparent;
+      border: none;
+      color: #e03e3e;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      user-select: none;
+      transition: color 0.3s;
+    }
+    .delete-entry-btn:hover {
+      color: #b62b2b;
+    }
+    button {
+      margin-right: 8px;
+      margin-top: 10px;
+      background: #2ba8b8;
+      border: none;
+      color: #111c28;
+      font-weight: bold;
+      padding: 8px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background: #1a7280;
+      color: white;
+    }
+    button.clear-btn, button.reset-btn {
+      background: #e03e3e;
+      color: #fff;
+    }
+    button.clear-btn:hover, button.reset-btn:hover {
+      background: #b62b2b;
+    }
+    input {
+      padding: 6px 8px;
+      margin-right: 12px;
+      border-radius: 5px;
+      border: 1px solid #2ba8b8;
+      background: #1c2b3a;
+      color: #fff;
+      font-weight: 600;
+      width: 140px;
+      text-align: center;
+    }
+    label {
+      margin-right: 6px;
+    }
+    #stepChart {
+      background:#1c2b3a;
+      margin: 30px auto;
+      border-radius:8px;
+      max-width:800px;
+      width:100%;
+      height:400px;
+    }
+    #inputContainer {
+      margin: 0 auto 20px auto;
+      max-width: 800px;
+    }
+    #buttonsContainer {
+      margin: 10px auto 0 auto;
+      max-width: 800px;
+      text-align: center;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1000px;
+      margin: 40px auto;
+    }
+    .nav-buttons a {
+      background-color: #2ba8b8;
+      color: #0f1928;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .nav-buttons a:hover {
+      background-color: #1d7c88;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>👣 Step Log</h2>
+
+  <div id="inputContainer">
+    <label for="dateInput">📅 Date:</label>
+    <input id="dateInput" placeholder="dd-mm-yyyy" autocomplete="off" />
+    
+    <label for="stepsInput">👟 Steps:</label>
+    <input type="number" id="stepsInput" min="0" step="1" placeholder="e.g. 1000" />
+  </div>
+
+  <div id="buttonsContainer">
+    <button id="updateBtn">📈 Update Chart</button>
+    <button id="clearBtn" class="clear-btn">🧽 Clear</button>
+    <button id="resetZoomBtn">🔍 Reset Zoom</button>
+    <button id="toggleEntriesBtn">✏️ Edit Previous Entries</button>
+    <button id="resetBtn" class="reset-btn">🔄 Reset</button>
+  </div>
+
+  <canvas id="stepChart"></canvas>
+
+  <div id="previousEntriesContainer">
+    <h3>📝 Previous Entered Values</h3>
+    <ul id="entriesList"></ul>
+  </div>
+
+<script>
+  // Initialize flatpickr on dateInput with maxDate today, no default date, and placeholder
+  flatpickr("#dateInput", {
+    dateFormat: "d-m-Y",
+    maxDate: "today",
+    allowInput: true,
+    defaultDate: null,
+    onReady: function(selectedDates, dateStr, instance) {
+      instance.clear();
+    },
+    disable: [
+      function(date) {
+        return date > new Date();
+      }
+    ]
+  });
+
+  const dateInput = document.getElementById('dateInput');
+  const stepsInput = document.getElementById('stepsInput');
+
+  const updateBtn = document.getElementById('updateBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const toggleEntriesBtn = document.getElementById('toggleEntriesBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const resetZoomBtn = document.getElementById('resetZoomBtn');
+
+  const previousEntriesContainer = document.getElementById('previousEntriesContainer');
+  const entriesList = document.getElementById('entriesList');
+  const inputContainer = document.getElementById('inputContainer');
+
+  // Data stored as { "yyyy-mm-dd": steps }
+  let stepData = JSON.parse(localStorage.getItem('stepLog')) || {};
+
+  const ctx = document.getElementById('stepChart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      datasets: [{
+        label: 'Steps',
+        data: [],
+        backgroundColor: '#2ba8b8',
+        borderRadius: 5,
+        barPercentage: 0.7,
+      }]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'nearest', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#2ba8b8', font: { size: 16, weight: 'bold' } } },
+        tooltip: {
+          callbacks: {
+            title: ctx => {
+              const date = ctx[0].parsed.x;
+              return new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            },
+            label: ctx => ctx.parsed.y + ' steps'
+          }
+        },
+        zoom: {
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: 'x',
+          },
+          pan: {
+            enabled: true,
+            mode: 'x',
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'time',
+          time: {
+            tooltipFormat: 'dd MMM yyyy',
+            unit: 'day',
+            displayFormats: {
+              day: 'dd MMM',
+            }
+          },
+          ticks: {
+            color: '#2ba8b8',
+            font: { weight: 'bold' },
+            maxRotation: 0,
+            minRotation: 0,
+          },
+          grid: {
+            color: '#1a2c3f',
+            borderColor: '#2ba8b8',
+            drawTicks: true,
+            drawOnChartArea: true,
+            drawBorder: true,
+            lineWidth: 1
+          }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: '#2ba8b8',
+            font: { weight: 'bold' },
+            stepSize: 1000,
+          },
+          grid: {
+            color: '#1a2c3f',
+            borderColor: '#2ba8b8',
+            drawTicks: true,
+            drawOnChartArea: true,
+            drawBorder: true,
+            lineWidth: 1
+          }
+        }
+      }
+    }
+  });
+
+  function formatDateToKey(dateStr) {
+    // input format dd-mm-yyyy
+    const [d,m,y] = dateStr.split('-');
+    if(!d || !m || !y) return null;
+    return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+  }
+
+  function formatKeyToDisplay(key) {
+    const [y,m,d] = key.split('-');
+    return `${d}-${m}-${y}`;
+  }
+
+  function getChartData() {
+    const dataPoints = [];
+    for (const key in stepData) {
+      dataPoints.push({
+        x: new Date(key),
+        y: stepData[key]
+      });
+    }
+    dataPoints.sort((a,b) => a.x - b.x);
+    return dataPoints;
+  }
+
+  function renderChart() {
+    chart.data.datasets[0].data = getChartData();
+    chart.update();
+  }
+
+  function saveData() {
+    localStorage.setItem('stepLog', JSON.stringify(stepData));
+  }
+
+  function updateEntriesList() {
+    entriesList.innerHTML = '';
+    const keysSorted = Object.keys(stepData).sort();
+
+    if(keysSorted.length === 0) {
+      previousEntriesContainer.style.display = 'none';
+      toggleEntriesBtn.textContent = "✏️ Edit Previous Entries";
+      return;
+    }
+
+    // Show container
+    previousEntriesContainer.style.display = 'block';
+
+    keysSorted.forEach(key => {
+      const li = document.createElement('li');
+      const dateDisplay = formatKeyToDisplay(key);
+      li.textContent = `${dateDisplay} — ${stepData[key]} steps`;
+      li.title = "Click to edit this entry";
+
+      li.addEventListener('click', () => {
+        dateInput.value = dateDisplay;
+        stepsInput.value = stepData[key];
+        inputContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '❌';
+      delBtn.className = 'delete-entry-btn';
+      delBtn.title = `Delete entry for ${dateDisplay}`;
+      delBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if(confirm(`Delete entry for ${dateDisplay}?`)) {
+          delete stepData[key];
+          saveData();
+          updateEntriesList();
+          renderChart();
+        }
+      });
+
+      li.appendChild(delBtn);
+      entriesList.appendChild(li);
+    });
+  }
+
+  function isDateInFuture(inputDate) {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    inputDate.setHours(0,0,0,0);
+    return inputDate > today;
+  }
+
+  function addStepData() {
+    const dateStr = dateInput.value.trim();
+    const stepsRaw = stepsInput.value.trim();
+
+    if(!dateStr) {
+      alert("Please enter a date.");
+      return;
+    }
+
+    if(!/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+      alert("Date format must be dd-mm-yyyy.");
+      return;
+    }
+
+    if(stepsRaw === '') {
+      alert("Please enter the number of steps.");
+      return;
+    }
+
+    const steps = parseInt(stepsRaw, 10);
+    if(isNaN(steps) || steps < 0) {
+      alert("Please enter a valid number of steps (0 or more).");
+      return;
+    }
+
+    const key = formatDateToKey(dateStr);
+    if(!key) {
+      alert("Invalid date.");
+      return;
+    }
+
+    const inputDateObj = new Date(key);
+    if(isDateInFuture(inputDateObj)) {
+      alert("Date cannot be in the future.");
+      return;
+    }
+
+    stepData[key] = steps;
+    saveData();
+    renderChart();
+    updateEntriesList();
+
+    clearInputsOnly();
+  }
+
+  function clearInputsOnly() {
+    dateInput.value = "";
+    stepsInput.value = "";
+  }
+
+  function resetAllData() {
+    if(confirm("Are you sure you want to reset all saved data? This cannot be undone.")) {
+      stepData = {};
+      saveData();
+      renderChart();
+      updateEntriesList();
+      clearInputsOnly();
+      previousEntriesContainer.style.display = 'none';
+      toggleEntriesBtn.textContent = "✏️ Edit Previous Entries";
+    }
+  }
+
+  function toggleEntriesVisibility() {
+    if(previousEntriesContainer.style.display === 'block') {
+      previousEntriesContainer.style.display = 'none';
+      toggleEntriesBtn.textContent = "✏️ Edit Previous Entries";
+    } else {
+      updateEntriesList();
+      previousEntriesContainer.style.display = 'block';
+      toggleEntriesBtn.textContent = "⬇️ Hide Previous Entries";
+      previousEntriesContainer.scrollIntoView({behavior: "smooth"});
+    }
+  }
+
+  function resetChartZoom() {
+    chart.resetZoom();
+  }
+
+  updateBtn.addEventListener('click', addStepData);
+  clearBtn.addEventListener('click', clearInputsOnly);
+  toggleEntriesBtn.addEventListener('click', toggleEntriesVisibility);
+  resetBtn.addEventListener('click', resetAllData);
+  resetZoomBtn.addEventListener('click', resetChartZoom);
+
+  renderChart();
+  updateEntriesList();
+</script>
+<div class="nav-buttons">
+    <a href="dataview2.html">← Step  Log</a>
+    <a href="dataview5.html">HWF Sync →</a>
+  </div>
+</body>
+</html>

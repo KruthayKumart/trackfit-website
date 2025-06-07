@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fitness Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="track-fit-icon.png" sizes="32x32" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f1928;
+      color: white;
+    }
+    .logo {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      z-index: 999;
+    }
+    .logo img {
+      height: 50px;
+    }
+    .container {
+      max-width: 960px;
+      margin: 100px auto 40px;
+      padding: 40px 20px;
+      background-color: #111c28;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(43, 168, 184, 0.3);
+    }
+    h1 {
+      text-align: center;
+      color: #25a1c2;
+      margin-bottom: 30px;
+    }
+    label {
+      font-weight: 600;
+      color: #25a1c2;
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #25a1c2;
+      border-radius: 6px;
+      background-color: #0f1928;
+      color: white;
+      box-sizing: border-box;
+    }
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .unit-select {
+      width: 100px;
+      background-color: #2ba8b8;
+      border: 1px solid #25a1c2;
+    }
+    .unit-select:focus {
+      background-color: #1d8c9a;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 16px;
+      background-color: #2ba8b8;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #1d8c9a;
+    }
+    table {
+      width: 100%;
+      margin-top: 30px;
+      border-collapse: collapse;
+      background-color: #0f1928;
+      border: 1px solid #25a1c2;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #25a1c2;
+      text-align: left;
+    }
+    th {
+      background-color: #25a1c2;
+      color: #0f1928;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1000px;
+      margin: 40px auto;
+    }
+    .nav-buttons a {
+      background-color: #2ba8b8;
+      color: #0f1928;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .nav-buttons a:hover {
+      background-color: #1d7c88;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <a href="trackfit.html" target="_blank">
+      <img src="track-fit-full-logo.png" alt="Track Fit Full Logo" />
+    </a>
+  </div>
+
+  <div class="container">
+    <h1>Fitness Tracker</h1>
+
+    <label>Date</label>
+    <input id="date" placeholder="dd-mm-yyyy" />
+
+    <label>Phase</label>
+    <select id="phase">
+      <option value="">Select Phase</option>
+      <option value="First">First</option>
+      <option value="Second">Second</option>
+      <option value="Third">Third</option>
+      <option value="Fourth">Fourth</option>
+    </select>
+
+    <label>Weight</label>
+    <div class="input-group">
+      <input id="weight" type="number" placeholder="e.g. 70" />
+      <select id="weightUnit" class="unit-select">
+        <option value="kg">kg</option>
+        <option value="lbs">lbs</option>
+      </select>
+    </div>
+
+    <label>Waist</label>
+    <div class="input-group">
+      <input id="waist" type="number" placeholder="e.g. 85" />
+      <select id="waistUnit" class="unit-select">
+        <option value="cm">cm</option>
+        <option value="in">in</option>
+      </select>
+    </div>
+
+    <label>Blood Pressure</label>
+    <input id="bp" placeholder="e.g. 120/80" />
+
+    <label>Steps</label>
+    <input id="steps" type="number" placeholder="e.g. 10000" />
+
+    <label>Sleep Hours</label>
+    <input id="sleep" type="number" placeholder="e.g. 7.5" />
+
+    <label>Sleep Quality</label>
+    <select id="sleepQuality">
+      <option value="">Select</option>
+      <option value="Excellent">Excellent</option>
+      <option value="Good">Good</option>
+      <option value="Average">Average</option>
+      <option value="Poor">Poor</option>
+    </select>
+
+    <label>Energy Level</label>
+    <select id="energy">
+      <option value="">Select</option>
+      <option value="High">High</option>
+      <option value="Moderate">Moderate</option>
+      <option value="Low">Low</option>
+    </select>
+
+    <label>Abs Definition</label>
+    <select id="absDefinition">
+      <option value="">Select</option>
+      <option value="Visible">Visible</option>
+      <option value="Faint">Faint</option>
+      <option value="Not Visible">Not Visible</option>
+    </select>
+
+    <label>Notes</label>
+    <textarea id="notes" placeholder="e.g. Felt energetic, good workout day."></textarea>
+
+    <button onclick="addFitnessEntry()">Add Entry</button>
+    <button onclick="exportFitnessToExcel()">Export to Excel</button>
+
+    <table id="fitnessTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Phase</th>
+          <th>Weight</th>
+          <th>Waist</th>
+          <th>BP</th>
+          <th>Steps</th>
+          <th>Sleep</th>
+          <th>Sleep Quality</th>
+          <th>Energy</th>
+          <th>Abs</th>
+          <th>Notes</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    flatpickr("#date", { dateFormat: "d-m-Y" });
+
+    let weightUnit = 'kg';
+    let waistUnit = 'cm';
+    const weightInput = document.getElementById('weight');
+    const waistInput = document.getElementById('waist');
+    const weightUnitSelect = document.getElementById('weightUnit');
+    const waistUnitSelect = document.getElementById('waistUnit');
+
+    weightUnitSelect.addEventListener('change', () => {
+      const newUnit = weightUnitSelect.value;
+      if (weightInput.value) {
+        const value = parseFloat(weightInput.value);
+        if (weightUnit === 'kg' && newUnit === 'lbs') {
+          weightInput.value = (value * 2.20462).toFixed(2);
+        } else if (weightUnit === 'lbs' && newUnit === 'kg') {
+          weightInput.value = (value / 2.20462).toFixed(2);
+        }
+      }
+      weightUnit = newUnit;
+    });
+
+    waistUnitSelect.addEventListener('change', () => {
+      const newUnit = waistUnitSelect.value;
+      if (waistInput.value) {
+        const value = parseFloat(waistInput.value);
+        if (waistUnit === 'cm' && newUnit === 'in') {
+          waistInput.value = (value * 0.393701).toFixed(2);
+        } else if (waistUnit === 'in' && newUnit === 'cm') {
+          waistInput.value = (value / 0.393701).toFixed(2);
+        }
+      }
+      waistUnit = newUnit;
+    });
+
+    function addFitnessEntry() {
+      const inputs = ["date", "phase", "weight", "waist", "bp", "steps", "sleep", "sleepQuality", "energy", "absDefinition", "notes"];
+      const values = inputs.map(id => document.getElementById(id).value);
+      if (!values[0] || !values[1]) return alert("Date and Phase are required.");
+
+      const row = document.querySelector("#fitnessTable tbody").insertRow();
+      const displayValues = [...values];
+      displayValues[2] = values[2] ? `${parseFloat(values[2]).toFixed(2)} ${weightUnit}` : '';
+      displayValues[3] = values[3] ? `${parseFloat(values[3]).toFixed(2)} ${waistUnit}` : '';
+
+      displayValues.forEach(val => row.insertCell().textContent = val);
+
+      const delCell = row.insertCell();
+      const btn = document.createElement("button");
+      btn.textContent = "Delete";
+      btn.style.cssText = "background:#b22222;color:#fff;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;";
+      btn.onclick = () => row.remove();
+      delCell.appendChild(btn);
+    }
+
+    function exportFitnessToExcel() {
+      const wb = XLSX.utils.table_to_book(document.getElementById("fitnessTable"), { sheet: "Fitness" });
+      XLSX.writeFile(wb, "fitness_tracker.xlsx");
+    }
+  </script>
+  <div class="nav-buttons">
+    <a href="trackfit.html">← Home</a>
+    <a href="workouttracker.html">Workout Tracker →</a>
+  </div>
+</body>
+</html>
